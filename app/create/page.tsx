@@ -102,28 +102,7 @@ export default function CreateMonumentPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-black text-white">
-      {/* Header */}
-      <header className="px-4 lg:px-6 h-20 flex items-center border-b-4 border-[#00D4FF] bg-black">
-        <Link href="/" className="flex items-center justify-center">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-[#00D4FF] border-4 border-white transform rotate-3 flex items-center justify-center shadow-[4px_4px_0px_0px_#ffffff]">
-              <span className="text-black font-black text-xl transform -rotate-3">T</span>
-            </div>
-            <span className="font-black text-2xl tracking-tight transform -skew-x-6">TURFSTAKE</span>
-          </div>
-        </Link>
-        <nav className="ml-auto flex gap-6">
-          <Link href="/map" className="text-lg font-black hover:text-[#00D4FF] transition-colors">
-            MAP
-          </Link>
-          <Link href="/create" className="text-lg font-black text-[#00D4FF] border-b-2 border-[#00D4FF] pb-1">
-            CREATE
-          </Link>
-          <Link href="/ar-viewer" className="text-lg font-black hover:text-[#00D4FF] transition-colors">
-            AR VIEW
-          </Link>
-        </nav>
-      </header>
+
 
       <main className="flex-1 p-6">
         <div className="container mx-auto max-w-4xl">
@@ -142,9 +121,8 @@ export default function CreateMonumentPage() {
               {[1, 2, 3, 4].map((stepNum) => (
                 <div key={stepNum} className="flex items-center">
                   <div
-                    className={`w-12 h-12 border-4 border-white flex items-center justify-center font-black text-xl transform rotate-3 ${
-                      step >= stepNum ? "bg-[#00D4FF] text-black" : "bg-black text-white"
-                    }`}
+                    className={`w-12 h-12 border-4 border-white flex items-center justify-center font-black text-xl transform rotate-3 ${step >= stepNum ? "bg-[#00D4FF] text-black" : "bg-black text-white"
+                      }`}
                   >
                     {step > stepNum ? <CheckCircle className="h-6 w-6" /> : stepNum}
                   </div>
@@ -314,11 +292,10 @@ export default function CreateMonumentPage() {
                           <Button
                             key={club.name}
                             onClick={() => setSelectedClub(club.name)}
-                            className={`p-4 border-4 border-black font-black text-left ${
-                              selectedClub === club.name
+                            className={`p-4 border-4 border-black font-black text-left ${selectedClub === club.name
                                 ? "bg-[#00D4FF] text-black"
                                 : "bg-white text-black hover:bg-gray-100"
-                            }`}
+                              }`}
                           >
                             <div className="flex items-center gap-3">
                               <div

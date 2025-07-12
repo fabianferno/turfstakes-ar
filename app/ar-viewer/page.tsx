@@ -38,8 +38,8 @@ export default function ARViewerPage() {
   useEffect(() => {
     // Check WebXR support
     if ("xr" in navigator) {
-      navigator.xr
-        ?.isSessionSupported("immersive-ar")
+      navigator.xr // @ts-ignore
+        ?.isSessionSupported("immersive-ar") // @ts-ignore
         .then((supported) => {
           setIsARSupported(supported)
         })
@@ -84,6 +84,7 @@ export default function ARViewerPage() {
 
   const startARSession = async () => {
     try {
+      // @ts-ignore
       if (!navigator.xr) {
         throw new Error("WebXR not supported")
       }
@@ -118,28 +119,7 @@ export default function ARViewerPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-black text-white">
-      {/* Header */}
-      <header className="px-4 lg:px-6 h-20 flex items-center border-b-4 border-[#00D4FF] bg-black">
-        <Link href="/" className="flex items-center justify-center">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-[#00D4FF] border-4 border-white transform rotate-3 flex items-center justify-center shadow-[4px_4px_0px_0px_#ffffff]">
-              <span className="text-black font-black text-xl transform -rotate-3">T</span>
-            </div>
-            <span className="font-black text-2xl tracking-tight transform -skew-x-6">TURFSTAKE</span>
-          </div>
-        </Link>
-        <nav className="ml-auto flex gap-6">
-          <Link href="/map" className="text-lg font-black hover:text-[#00D4FF] transition-colors">
-            MAP
-          </Link>
-          <Link href="/create" className="text-lg font-black hover:text-[#00D4FF] transition-colors">
-            CREATE
-          </Link>
-          <Link href="/ar-viewer" className="text-lg font-black text-[#00D4FF] border-b-2 border-[#00D4FF] pb-1">
-            AR VIEW
-          </Link>
-        </nav>
-      </header>
+
 
       <main className="flex-1 p-6">
         <div className="container mx-auto max-w-4xl">
@@ -152,9 +132,8 @@ export default function ARViewerPage() {
 
           {/* AR Support Check */}
           <Card
-            className={`mb-8 border-4 shadow-[8px_8px_0px_0px_#ffffff] ${
-              isARSupported === null ? "bg-gray-500" : isARSupported ? "bg-green-600" : "bg-red-600"
-            }`}
+            className={`mb-8 border-4 shadow-[8px_8px_0px_0px_#ffffff] ${isARSupported === null ? "bg-gray-500" : isARSupported ? "bg-green-600" : "bg-red-600"
+              }`}
           >
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
@@ -214,9 +193,8 @@ export default function ARViewerPage() {
                 {nearbyMonuments.map((monument) => (
                   <div
                     key={monument.id}
-                    className={`p-4 border-4 border-black cursor-pointer transition-all ${
-                      selectedMonument?.id === monument.id ? "bg-[#00D4FF] text-black" : "bg-gray-100 hover:bg-gray-200"
-                    }`}
+                    className={`p-4 border-4 border-black cursor-pointer transition-all ${selectedMonument?.id === monument.id ? "bg-[#00D4FF] text-black" : "bg-gray-100 hover:bg-gray-200"
+                      }`}
                     onClick={() => setSelectedMonument(monument)}
                   >
                     <div className="flex items-center justify-between">
