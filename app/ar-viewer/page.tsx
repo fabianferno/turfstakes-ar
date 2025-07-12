@@ -1,0 +1,399 @@
+"use client"
+
+import { useState, useEffect, useRef } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import {
+  Camera,
+  Smartphone,
+  AlertTriangle,
+  CheckCircle,
+  MapPin,
+  Eye,
+  Zap,
+  Navigation,
+  Target,
+  Coins,
+} from "lucide-react"
+import Link from "next/link"
+
+interface NearbyMonument {
+  id: number
+  name: string
+  club: string
+  level: number
+  distance: number
+  clubColor: string
+}
+
+export default function ARViewerPage() {
+  const [isARSupported, setIsARSupported] = useState<boolean | null>(null)
+  const [isARActive, setIsARActive] = useState(false)
+  const [nearbyMonuments, setNearbyMonuments] = useState<NearbyMonument[]>([])
+  const [selectedMonument, setSelectedMonument] = useState<NearbyMonument | null>(null)
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    // Check WebXR support
+    if ("xr" in navigator) {
+      navigator.xr
+        ?.isSessionSupported("immersive-ar")
+        .then((supported) => {
+          setIsARSupported(supported)
+        })
+        .catch(() => {
+          setIsARSupported(false)
+        })
+    } else {
+      setIsARSupported(false)
+    }
+
+    // Get user location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        setUserLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        })
+      })
+    }
+
+    // Mock nearby monuments
+    const mockNearbyMonuments: NearbyMonument[] = [
+      {
+        id: 1,
+        name: "Camp Nou Monument",
+        club: "FC Barcelona",
+        level: 5,
+        distance: 0.05, // 50 meters
+        clubColor: "#A50044",
+      },
+      {
+        id: 2,
+        name: "Local Stadium Shrine",
+        club: "Manchester United",
+        level: 2,
+        distance: 0.12, // 120 meters
+        clubColor: "#DA020E",
+      },
+    ]
+    setNearbyMonuments(mockNearbyMonuments)
+  }, [])
+
+  const startARSession = async () => {
+    try {
+      if (!navigator.xr) {
+        throw new Error("WebXR not supported")
+      }
+
+      // For demo purposes, we'll simulate AR with camera
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" },
+      })
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream
+        setIsARActive(true)
+      }
+
+      // In a real implementation, you would:
+      // const session = await navigator.xr.requestSession('immersive-ar')
+      // Set up WebXR rendering loop, anchor tracking, etc.
+    } catch (error) {
+      console.error("Error starting AR session:", error)
+      alert("AR not available. Using camera fallback.")
+    }
+  }
+
+  const stopARSession = () => {
+    if (videoRef.current?.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream
+      stream.getTracks().forEach((track) => track.stop())
+      videoRef.current.srcObject = null
+    }
+    setIsARActive(false)
+  }
+
+  return (
+    <div className="flex flex-col min-h-screen bg-black text-white">
+      {/* Header */}
+      <header className="px-4 lg:px-6 h-20 flex items-center border-b-4 border-[#00D4FF] bg-black">
+        <Link href="/" className="flex items-center justify-center">
+          <div className="flex items-center space-x-3">
+            <div className="w-12 h-12 bg-[#00D4FF] border-4 border-white transform rotate-3 flex items-center justify-center shadow-[4px_4px_0px_0px_#ffffff]">
+              <span className="text-black font-black text-xl transform -rotate-3">T</span>
+            </div>
+            <span className="font-black text-2xl tracking-tight transform -skew-x-6">TURFSTAKE</span>
+          </div>
+        </Link>
+        <nav className="ml-auto flex gap-6">
+          <Link href="/map" className="text-lg font-black hover:text-[#00D4FF] transition-colors">
+            MAP
+          </Link>
+          <Link href="/create" className="text-lg font-black hover:text-[#00D4FF] transition-colors">
+            CREATE
+          </Link>
+          <Link href="/ar-viewer" className="text-lg font-black text-[#00D4FF] border-b-2 border-[#00D4FF] pb-1">
+            AR VIEW
+          </Link>
+        </nav>
+      </header>
+
+      <main className="flex-1 p-6">
+        <div className="container mx-auto max-w-4xl">
+          {/* Page Header */}
+          <div className="mb-8 text-center">
+            <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4 transform -skew-x-2">AR VIEWER</h1>
+            <div className="w-32 h-3 bg-[#00D4FF] mx-auto transform skew-x-12 mb-4"></div>
+            <p className="text-xl font-bold text-gray-300">EXPERIENCE MONUMENTS IN AUGMENTED REALITY</p>
+          </div>
+
+          {/* AR Support Check */}
+          <Card
+            className={`mb-8 border-4 shadow-[8px_8px_0px_0px_#ffffff] ${
+              isARSupported === null ? "bg-gray-500" : isARSupported ? "bg-green-600" : "bg-red-600"
+            }`}
+          >
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                {isARSupported === null && (
+                  <>
+                    <Smartphone className="h-8 w-8 text-white" />
+                    <div>
+                      <h3 className="text-xl font-black text-white">CHECKING AR SUPPORT...</h3>
+                      <p className="font-bold text-gray-200">DETECTING WEBXR CAPABILITIES</p>
+                    </div>
+                  </>
+                )}
+                {isARSupported === true && (
+                  <>
+                    <CheckCircle className="h-8 w-8 text-white" />
+                    <div>
+                      <h3 className="text-xl font-black text-white">AR SUPPORTED!</h3>
+                      <p className="font-bold text-gray-200">YOUR DEVICE SUPPORTS WEBXR AR</p>
+                    </div>
+                  </>
+                )}
+                {isARSupported === false && (
+                  <>
+                    <AlertTriangle className="h-8 w-8 text-white" />
+                    <div>
+                      <h3 className="text-xl font-black text-white">AR NOT SUPPORTED</h3>
+                      <p className="font-bold text-gray-200">USING CAMERA FALLBACK MODE</p>
+                    </div>
+                  </>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Current Location */}
+          {userLocation && (
+            <Card className="mb-8 bg-[#00D4FF] text-black border-4 border-white shadow-[8px_8px_0px_0px_#ffffff]">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <Navigation className="h-8 w-8" />
+                  <div>
+                    <h3 className="text-xl font-black">YOUR LOCATION</h3>
+                    <p className="font-bold">
+                      LAT: {userLocation.lat.toFixed(4)}, LNG: {userLocation.lng.toFixed(4)}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Nearby Monuments */}
+          <Card className="mb-8 bg-white text-black border-4 border-[#00D4FF] shadow-[8px_8px_0px_0px_#00D4FF]">
+            <CardContent className="p-6">
+              <h3 className="text-2xl font-black mb-4">NEARBY MONUMENTS</h3>
+              <div className="space-y-4">
+                {nearbyMonuments.map((monument) => (
+                  <div
+                    key={monument.id}
+                    className={`p-4 border-4 border-black cursor-pointer transition-all ${
+                      selectedMonument?.id === monument.id ? "bg-[#00D4FF] text-black" : "bg-gray-100 hover:bg-gray-200"
+                    }`}
+                    onClick={() => setSelectedMonument(monument)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-black text-lg">{monument.name}</h4>
+                        <p className="font-bold">{monument.club}</p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <Badge className="font-black text-white" style={{ backgroundColor: monument.clubColor }}>
+                            LEVEL {monument.level}
+                          </Badge>
+                          <span className="font-bold text-sm">
+                            <MapPin className="inline h-4 w-4 mr-1" />
+                            {(monument.distance * 1000).toFixed(0)}m away
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-black text-sm">{monument.distance < 0.1 ? "IN RANGE" : "TOO FAR"}</p>
+                        <div
+                          className={`w-4 h-4 rounded-full ${monument.distance < 0.1 ? "bg-green-500" : "bg-red-500"}`}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* AR Viewer */}
+          <Card className="bg-black border-4 border-[#00D4FF] shadow-[8px_8px_0px_0px_#00D4FF]">
+            <CardContent className="p-6">
+              {!isARActive ? (
+                <div className="text-center space-y-6">
+                  <div className="space-y-4">
+                    <Eye className="h-24 w-24 mx-auto text-[#00D4FF]" />
+                    <h3 className="text-3xl font-black text-white">START AR EXPERIENCE</h3>
+                    <p className="font-bold text-gray-300">
+                      {selectedMonument
+                        ? `VIEW ${selectedMonument.name} IN AUGMENTED REALITY`
+                        : "SELECT A NEARBY MONUMENT TO VIEW IN AR"}
+                    </p>
+                  </div>
+
+                  {selectedMonument && (
+                    <div className="space-y-4">
+                      {selectedMonument.distance < 0.1 ? (
+                        <Button
+                          onClick={startARSession}
+                          className="bg-[#00D4FF] text-black font-black text-xl px-12 py-6 border-4 border-white"
+                        >
+                          <Camera className="mr-3 h-6 w-6" />
+                          START AR SESSION
+                        </Button>
+                      ) : (
+                        <div className="space-y-4">
+                          <div className="bg-yellow-100 border-4 border-yellow-500 p-4 text-black">
+                            <p className="font-black">⚠️ GET CLOSER TO THE MONUMENT TO VIEW IN AR</p>
+                            <p className="font-bold">
+                              YOU NEED TO BE WITHIN 100M ({(selectedMonument.distance * 1000).toFixed(0)}M AWAY)
+                            </p>
+                          </div>
+                          <Link href="/map">
+                            <Button className="bg-white text-black font-black border-4 border-black">
+                              <MapPin className="mr-2 h-5 w-5" />
+                              NAVIGATE TO MONUMENT
+                            </Button>
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="relative">
+                    <video ref={videoRef} autoPlay playsInline className="w-full border-4 border-[#00D4FF]" />
+
+                    {/* AR Overlay - Monument Simulation */}
+                    {selectedMonument && (
+                      <div className="absolute inset-0 pointer-events-none">
+                        {/* Simulated AR Monument */}
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                          <div className="text-center">
+                            {/* Monument Level Visualization */}
+                            <div
+                              className={`w-32 h-${16 + selectedMonument.level * 8} bg-gradient-to-t from-gray-600 to-white border-4 border-[#00D4FF] mx-auto mb-4 shadow-[8px_8px_0px_0px_#00D4FF] animate-pulse`}
+                            >
+                              <div
+                                className="w-full h-8 flex items-center justify-center text-black font-black"
+                                style={{ backgroundColor: selectedMonument.clubColor }}
+                              >
+                                {selectedMonument.club
+                                  .split(" ")
+                                  .map((word) => word[0])
+                                  .join("")}
+                              </div>
+                            </div>
+
+                            {/* Monument Info Overlay */}
+                            <div className="bg-black bg-opacity-80 text-white p-4 border-4 border-[#00D4FF] font-black">
+                              <h4 className="text-lg">{selectedMonument.name}</h4>
+                              <p className="text-sm">LEVEL {selectedMonument.level}</p>
+                              <div className="flex items-center gap-2 mt-2">
+                                <Coins className="h-4 w-4 text-[#00D4FF]" />
+                                <span className="text-xs">STAKE TOKENS</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* AR Target Reticle */}
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                          <Target className="h-8 w-8 text-[#00D4FF] animate-spin" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex gap-4">
+                    <Button
+                      onClick={stopARSession}
+                      className="flex-1 bg-red-600 text-white font-black border-4 border-white"
+                    >
+                      STOP AR
+                    </Button>
+                    <Link href={`/monument/${selectedMonument?.id}`} className="flex-1">
+                      <Button className="w-full bg-[#00D4FF] text-black font-black border-4 border-white">
+                        <Zap className="mr-2 h-5 w-5" />
+                        STAKE TOKENS
+                      </Button>
+                    </Link>
+                  </div>
+
+                  {/* AR Instructions */}
+                  <div className="bg-[#00D4FF] text-black p-4 border-4 border-white">
+                    <h4 className="font-black mb-2">AR INSTRUCTIONS:</h4>
+                    <ul className="font-bold text-sm space-y-1">
+                      <li>• POINT CAMERA AT THE ANCHOR OBJECT</li>
+                      <li>• MOVE SLOWLY FOR BETTER TRACKING</li>
+                      <li>• TAP MONUMENT TO INTERACT</li>
+                      <li>• USE GOOD LIGHTING CONDITIONS</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* WebXR Info */}
+          <Card className="mt-8 bg-gray-900 text-white border-4 border-gray-600">
+            <CardContent className="p-6">
+              <h3 className="text-xl font-black mb-4">WEBXR AR TECHNOLOGY</h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <h4 className="font-black text-[#00D4FF] mb-2">FEATURES:</h4>
+                  <ul className="font-bold text-sm space-y-1">
+                    <li>• REAL-TIME ANCHOR TRACKING</li>
+                    <li>• 3D MONUMENT RENDERING</li>
+                    <li>• SPATIAL AUDIO SUPPORT</li>
+                    <li>• CROSS-PLATFORM COMPATIBILITY</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-black text-[#00D4FF] mb-2">REQUIREMENTS:</h4>
+                  <ul className="font-bold text-sm space-y-1">
+                    <li>• WEBXR COMPATIBLE BROWSER</li>
+                    <li>• CAMERA PERMISSIONS</li>
+                    <li>• STABLE INTERNET CONNECTION</li>
+                    <li>• GOOD LIGHTING CONDITIONS</li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    </div>
+  )
+}
