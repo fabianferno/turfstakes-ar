@@ -6,8 +6,13 @@ import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Camera, Upload, CheckCircle, AlertTriangle, Navigation, Target, Coins } from "lucide-react"
+import { Camera, Upload, CheckCircle, AlertTriangle, Navigation, Target, Coins, Loader2 } from "lucide-react"
 import Link from "next/link"
+import { useAccount } from "wagmi"
+import { useCreateMonument } from "@/hooks/use-create-monument"
+import { useClubs } from "@/hooks/use-clubs"
+import { useToast } from "@/hooks/use-toast"
+import ConnectWallet from "@/components/connect-wallet"
 
 export default function CreateMonumentPage() {
   const [step, setStep] = useState(1)
@@ -16,18 +21,15 @@ export default function CreateMonumentPage() {
   const [monumentName, setMonumentName] = useState("")
   const [selectedClub, setSelectedClub] = useState("")
   const [isCapturing, setIsCapturing] = useState(false)
+  const [createdMonumentId, setCreatedMonumentId] = useState<string | null>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const clubs = [
-    { name: "FC Barcelona", color: "#A50044", token: "BAR" },
-    { name: "Manchester United", color: "#DA020E", token: "MUN" },
-    { name: "Liverpool FC", color: "#C8102E", token: "LIV" },
-    { name: "Chelsea FC", color: "#034694", token: "CHE" },
-    { name: "Arsenal FC", color: "#EF0107", token: "ARS" },
-    { name: "Real Madrid", color: "#FEBE10", token: "RMA" },
-  ]
+  const { address, isConnected } = useAccount()
+  const { clubs, isLoading: clubsLoading } = useClubs()
+  const { createMonument, checkCoordinates, isUploading, isPending, isConfirming, isSuccess, error, coordinatesUsed, checkingCoordinates } = useCreateMonument()
+  const { toast } = useToast()
 
   useEffect(() => {
     // Get user location
@@ -40,6 +42,35 @@ export default function CreateMonumentPage() {
       })
     }
   }, [])
+
+  // Check coordinates when location changes
+  useEffect(() => {
+    if (location) {
+      checkCoordinates(location.lat, location.lng)
+    }
+  }, [location, checkCoordinates])
+
+  // Handle successful monument creation
+  useEffect(() => {
+    if (isSuccess) {
+      toast({
+        title: "Monument Created Successfully! 🎉",
+        description: `Your monument "${monumentName}" has been created.`,
+      })
+      setStep(4)
+    }
+  }, [isSuccess, monumentName, toast])
+
+  // Handle errors
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: "Error Creating Monument",
+        description: error.message || "Something went wrong. Please try again.",
+        variant: "destructive",
+      })
+    }
+  }, [error, toast])
 
   const startCamera = async () => {
     try {
@@ -89,21 +120,56 @@ export default function CreateMonumentPage() {
     }
   }
 
-  const createMonument = () => {
-    // Simulate monument creation
-    console.log("Creating monument:", {
-      name: monumentName,
-      club: selectedClub,
-      location,
-      anchorImage,
-    })
-    setStep(4)
+  const handleCreateMonument = async () => {
+    if (!location || !anchorImage || !selectedClub) {
+      toast({
+        title: "Missing Information",
+        description: "Please ensure all fields are filled out.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    try {
+      await createMonument({
+        clubName: selectedClub,
+        latitude: location.lat,
+        longitude: location.lng,
+        anchorImageData: anchorImage,
+      })
+    } catch (error) {
+      console.error("Error creating monument:", error)
+    }
+  }
+
+  // Show wallet connection if not connected
+  if (!isConnected) {
+    return (
+      <div className="flex flex-col min-h-screen bg-black text-white">
+        <main className="flex-1 p-6 flex items-center justify-center">
+          <Card className="bg-white text-black border-4 border-[#00D4FF] shadow-[8px_8px_0px_0px_#00D4FF] max-w-md">
+            <CardContent className="p-8 text-center">
+              <div className="space-y-6">
+                <div className="w-24 h-24 bg-[#00D4FF] border-4 border-black transform rotate-3 flex items-center justify-center mx-auto shadow-[4px_4px_0px_0px_#000000]">
+                  <span className="text-black font-black text-3xl transform -rotate-3">T</span>
+                </div>
+                <div>
+                  <h2 className="text-3xl font-black mb-4">CONNECT WALLET</h2>
+                  <p className="font-bold text-gray-600 mb-6">
+                    CONNECT YOUR WALLET TO CREATE MONUMENTS
+                  </p>
+                </div>
+                <ConnectWallet />
+              </div>
+            </CardContent>
+          </Card>
+        </main>
+      </div>
+    )
   }
 
   return (
     <div className="flex flex-col min-h-screen bg-black text-white">
-
-
       <main className="flex-1 p-6">
         <div className="container mx-auto max-w-4xl">
           {/* Page Header */}
@@ -145,19 +211,60 @@ export default function CreateMonumentPage() {
                   </div>
 
                   {location ? (
-                    <Card className="bg-[#00D4FF] text-black border-4 border-black">
-                      <CardContent className="p-6">
-                        <div className="flex items-center gap-4">
-                          <Navigation className="h-8 w-8" />
-                          <div>
-                            <h3 className="text-xl font-black">CURRENT LOCATION</h3>
-                            <p className="font-bold">LAT: {location.lat.toFixed(6)}</p>
-                            <p className="font-bold">LNG: {location.lng.toFixed(6)}</p>
+                    <>
+                      <Card className="bg-[#00D4FF] text-black border-4 border-black">
+                        <CardContent className="p-6">
+                          <div className="flex items-center gap-4">
+                            <Navigation className="h-8 w-8" />
+                            <div>
+                              <h3 className="text-xl font-black">CURRENT LOCATION</h3>
+                              <p className="font-bold">LAT: {location.lat.toFixed(6)}</p>
+                              <p className="font-bold">LNG: {location.lng.toFixed(6)}</p>
+                            </div>
+                            <CheckCircle className="h-8 w-8 ml-auto text-green-600" />
                           </div>
-                          <CheckCircle className="h-8 w-8 ml-auto text-green-600" />
-                        </div>
-                      </CardContent>
-                    </Card>
+                        </CardContent>
+                      </Card>
+
+                      {/* Location Status */}
+                      {checkingCoordinates ? (
+                        <Card className="bg-yellow-100 text-black border-4 border-yellow-500">
+                          <CardContent className="p-6">
+                            <div className="flex items-center gap-4">
+                              <Loader2 className="h-8 w-8 animate-spin text-yellow-600" />
+                              <div>
+                                <h3 className="text-xl font-black">CHECKING LOCATION...</h3>
+                                <p className="font-bold">VERIFYING COORDINATES</p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ) : Boolean(coordinatesUsed) ? (
+                        <Card className="bg-red-100 text-black border-4 border-red-500">
+                          <CardContent className="p-6">
+                            <div className="flex items-center gap-4">
+                              <AlertTriangle className="h-8 w-8 text-red-600" />
+                              <div>
+                                <h3 className="text-xl font-black">LOCATION ALREADY USED</h3>
+                                <p className="font-bold">A MONUMENT ALREADY EXISTS HERE</p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ) : (
+                        <Card className="bg-green-100 text-black border-4 border-green-500">
+                          <CardContent className="p-6">
+                            <div className="flex items-center gap-4">
+                              <CheckCircle className="h-8 w-8 text-green-600" />
+                              <div>
+                                <h3 className="text-xl font-black">LOCATION AVAILABLE</h3>
+                                <p className="font-bold">YOU CAN CREATE A MONUMENT HERE</p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </>
                   ) : (
                     <Card className="bg-yellow-100 text-black border-4 border-yellow-500">
                       <CardContent className="p-6">
@@ -175,11 +282,25 @@ export default function CreateMonumentPage() {
                   <div className="text-center">
                     <Button
                       onClick={() => setStep(2)}
-                      disabled={!location}
+                      disabled={!location || checkingCoordinates || Boolean(coordinatesUsed)}
                       className="bg-[#00D4FF] text-black font-black text-xl px-12 py-6 border-4 border-black disabled:opacity-50"
                     >
-                      CONFIRM LOCATION
-                      <Target className="ml-3 h-6 w-6" />
+                      {checkingCoordinates ? (
+                        <>
+                          <Loader2 className="mr-3 h-6 w-6 animate-spin" />
+                          CHECKING LOCATION...
+                        </>
+                      ) : Boolean(coordinatesUsed) ? (
+                        <>
+                          <AlertTriangle className="mr-3 h-6 w-6" />
+                          LOCATION UNAVAILABLE
+                        </>
+                      ) : (
+                        <>
+                          CONFIRM LOCATION
+                          <Target className="ml-3 h-6 w-6" />
+                        </>
+                      )}
                     </Button>
                   </div>
                 </div>
@@ -287,40 +408,61 @@ export default function CreateMonumentPage() {
 
                     <div>
                       <label className="block font-black text-lg mb-2">SELECT YOUR CLUB</label>
-                      <div className="grid gap-3 md:grid-cols-2">
-                        {clubs.map((club) => (
-                          <Button
-                            key={club.name}
-                            onClick={() => setSelectedClub(club.name)}
-                            className={`p-4 border-4 border-black font-black text-left ${selectedClub === club.name
+                      {clubsLoading ? (
+                        <div className="flex items-center justify-center p-8">
+                          <Loader2 className="h-8 w-8 animate-spin" />
+                          <span className="ml-2 font-black">LOADING CLUBS...</span>
+                        </div>
+                      ) : clubs.length > 0 ? (
+                        <div className="grid gap-3 md:grid-cols-2">
+                          {clubs.map((club) => (
+                            <Button
+                              key={club.name}
+                              onClick={() => setSelectedClub(club.name)}
+                              className={`p-4 border-4 border-black font-black text-left ${selectedClub === club.name
                                 ? "bg-[#00D4FF] text-black"
                                 : "bg-white text-black hover:bg-gray-100"
-                              }`}
-                          >
-                            <div className="flex items-center gap-3">
-                              <div
-                                className="w-6 h-6 border-2 border-black"
-                                style={{ backgroundColor: club.color }}
-                              ></div>
-                              <div>
-                                <div className="font-black">{club.name}</div>
-                                <div className="text-sm">{club.token} TOKEN</div>
+                                }`}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div
+                                  className="w-6 h-6 border-2 border-black"
+                                  style={{ backgroundColor: club.color }}
+                                ></div>
+                                <div>
+                                  <div className="font-black">{club.name}</div>
+                                  <div className="text-sm">{club.tokenSymbol} TOKEN</div>
+                                </div>
                               </div>
-                            </div>
-                          </Button>
-                        ))}
-                      </div>
+                            </Button>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center p-8 bg-yellow-100 border-4 border-yellow-500 rounded">
+                          <p className="font-black text-yellow-800">NO CLUBS REGISTERED YET</p>
+                          <p className="text-yellow-700">Clubs need to be registered in the contract first</p>
+                        </div>
+                      )}
                     </div>
                   </div>
 
                   <div className="text-center">
                     <Button
-                      onClick={createMonument}
-                      disabled={!monumentName || !selectedClub}
+                      onClick={handleCreateMonument}
+                      disabled={!monumentName || !selectedClub || isUploading || isPending || isConfirming}
                       className="bg-[#00D4FF] text-black font-black text-xl px-12 py-6 border-4 border-black disabled:opacity-50"
                     >
-                      CREATE MONUMENT
-                      <Coins className="ml-3 h-6 w-6" />
+                      {isUploading || isPending || isConfirming ? (
+                        <>
+                          <Loader2 className="mr-3 h-6 w-6 animate-spin" />
+                          {isUploading ? "UPLOADING..." : isPending ? "CONFIRM TX..." : "CREATING..."}
+                        </>
+                      ) : (
+                        <>
+                          CREATE MONUMENT
+                          <Coins className="ml-3 h-6 w-6" />
+                        </>
+                      )}
                     </Button>
                   </div>
                 </div>
