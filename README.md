@@ -1,6 +1,6 @@
 ## **TurfStake AR**
 
-**Claim your turf. Raise your club’s legacy.**
+**Claim your turf. Raise your club's legacy.**
 
 TurfStake AR is a geo-based augmented reality experience where fans turn real-world locations into evolving monuments for their favorite sports clubs using **Chiliz fan tokens**.
 
@@ -36,5 +36,35 @@ Think **Turf Wars x Pokémon GO** — but for your team.
 4. **Monument Stats Page**
 
    * View total tokens staked, top contributing fans, monument level (1-5), and live sponsor ads.
-   * See your club’s global monument ranking (#1, #2, etc.).
+   * See your club's global monument ranking (#1, #2, etc.).
    * Monuments gain visual upgrades and unlock perks at each level.
+
+---
+
+### Setup Instructions
+
+1. **Install dependencies:**
+   ```bash
+   yarn install
+   ```
+
+2. **Configure environment variables:**
+   Create a `.env.local` file in the root directory with the following variables:
+   ```bash
+   # Pinata IPFS Configuration (required for image uploads)
+   NEXT_PUBLIC_PINATA_JWT=your_pinata_jwt_token_here
+   NEXT_PUBLIC_PINATA_GATEWAY_URL=https://gateway.pinata.cloud
+   
+   # WalletConnect Project ID (already set with default)
+   NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=3efcd27f7b2cd095a70a209a01033aa7
+   ```
+   
+   **Note:** The map uses OpenStreetMap which doesn't require any API keys, but you'll need to set up Pinata for image uploads in campaign creation.
+
+3. **Run the development server:**
+   ```bash
+   yarn dev
+   ```
+
+4. **Open your browser:**
+   Navigate to `http://localhost:3000` to see the application.

@@ -35,3 +35,5 @@ export const CLUB_TOKENS = [
       "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Logo_of_AC_Milan.svg/1200px-Logo_of_AC_Milan.svg.png",
   },
 ];
+
+export const TURF_STAKE_CONTRACT = "0xa168F19B1b2B5232f0C56557b78cf0b8F64716C6";

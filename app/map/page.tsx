@@ -7,6 +7,13 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { MapPin, Search, Filter, Trophy, Users, Coins, Eye, Navigation, TrendingUp } from "lucide-react"
 import Link from "next/link"
+import dynamic from "next/dynamic"
+
+// Dynamic import to avoid SSR issues
+const OpenMap = dynamic(() => import("@/components/mapbox-map"), {
+  ssr: false,
+  loading: () => <div className="w-full h-96 bg-gray-800 flex items-center justify-center">Loading map...</div>
+})
 
 interface Monument {
   id: number
@@ -27,10 +34,13 @@ export default function MapPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedClub, setSelectedClub] = useState("all")
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
+  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
-    // Get user location
-    if (navigator.geolocation) {
+    setIsMounted(true)
+
+    // Get user location only on client side
+    if (typeof window !== 'undefined' && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
         setUserLocation({
           lat: position.coords.latitude,
@@ -120,10 +130,28 @@ export default function MapPage() {
 
   const clubs = Array.from(new Set(monuments.map((m) => m.club)))
 
+  // Don't render location-dependent content on server
+  if (!isMounted) {
+    return (
+      <div className="flex flex-col min-h-screen bg-black text-white">
+        <main className="flex-1 p-6">
+          <div className="container mx-auto">
+            <div className="mb-8">
+              <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4 transform -skew-x-2">WORLD MAP</h1>
+              <div className="w-32 h-3 bg-[#00D4FF] transform skew-x-12 mb-4"></div>
+              <p className="text-xl font-bold text-gray-300">DISCOVER MONUMENTS WORLDWIDE AND CLAIM YOUR TERRITORY</p>
+            </div>
+            <div className="w-full h-96 bg-gray-800 flex items-center justify-center">
+              Loading...
+            </div>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-black text-white">
-
-
       <main className="flex-1 p-6">
         <div className="container mx-auto">
           {/* Page Header */}
@@ -182,29 +210,14 @@ export default function MapPage() {
             </Card>
           )}
 
-          {/* Map Placeholder */}
+          {/* Interactive Map */}
           <Card className="mb-8 bg-gray-900 border-4 border-[#00D4FF] shadow-[8px_8px_0px_0px_#00D4FF]">
             <CardContent className="p-8">
-              <div className="h-96 bg-gray-800 border-4 border-gray-600 flex items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(0,212,255,0.1)_25%,rgba(0,212,255,0.1)_50%,transparent_50%,transparent_75%,rgba(0,212,255,0.1)_75%)] bg-[length:20px_20px]"></div>
-                <div className="text-center z-10">
-                  <MapPin className="h-16 w-16 mx-auto mb-4 text-[#00D4FF]" />
-                  <h3 className="text-2xl font-black text-white mb-2">INTERACTIVE MAP</h3>
-                  <p className="font-bold text-gray-400">WEBGL MAP INTEGRATION COMING SOON</p>
-                </div>
-                {/* Mock map pins */}
-                {filteredMonuments.slice(0, 3).map((monument, index) => (
-                  <div
-                    key={monument.id}
-                    className={`absolute w-6 h-6 bg-[${monument.clubColor}] border-2 border-white rounded-full transform hover:scale-150 transition-all cursor-pointer`}
-                    style={{
-                      left: `${20 + index * 25}%`,
-                      top: `${30 + index * 15}%`,
-                    }}
-                    title={monument.name}
-                  />
-                ))}
+              <div className="mb-4">
+                <h3 className="text-2xl font-black text-white mb-2">INTERACTIVE MAP</h3>
+                <p className="font-bold text-gray-400">EXPLORE MONUMENTS AROUND THE WORLD</p>
               </div>
+              <OpenMap monuments={filteredMonuments} userLocation={userLocation} />
             </CardContent>
           </Card>
 
@@ -215,69 +228,78 @@ export default function MapPage() {
               {filteredMonuments.map((monument) => (
                 <Card
                   key={monument.id}
-                  className="bg-white text-black border-4 border-[#00D4FF] shadow-[8px_8px_0px_0px_#00D4FF] transform hover:translate-x-2 hover:translate-y-2 hover:shadow-[4px_4px_0px_0px_#00D4FF] transition-all"
+                  className="bg-white text-black border-4 border-[#00D4FF] shadow-[8px_8px_0px_0px_#00D4FF] hover:shadow-[4px_4px_0px_0px_#00D4FF] transition-all duration-200 transform hover:translate-x-1 hover:translate-y-1"
                 >
                   <CardContent className="p-6">
-                    <div className="grid gap-4 md:grid-cols-4 items-center">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Badge className="bg-black text-white font-black">#{monument.ranking}</Badge>
-                          <Badge className="font-black text-white" style={{ backgroundColor: monument.clubColor }}>
-                            LEVEL {monument.level}
-                          </Badge>
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-4">
+                        <div
+                          className="w-4 h-8 transform skew-x-12"
+                          style={{ backgroundColor: monument.clubColor }}
+                        ></div>
+                        <div>
+                          <h3 className="text-xl font-black">{monument.name}</h3>
+                          <p className="font-bold text-gray-600">{monument.club}</p>
                         </div>
-                        <h3 className="text-xl font-black">{monument.name}</h3>
-                        <p className="font-bold text-gray-600">{monument.club}</p>
-                        <p className="font-bold text-sm text-gray-500">
-                          <MapPin className="inline h-4 w-4 mr-1" />
-                          {monument.distance}km away
-                        </p>
                       </div>
+                      <div className="flex items-center gap-2">
+                        <Badge className="bg-[#00D4FF] text-black font-black border-2 border-black">
+                          #{monument.ranking}
+                        </Badge>
+                        <Badge
+                          variant="outline"
+                          className="border-2 border-black font-black"
+                          style={{ backgroundColor: monument.clubColor, color: "white" }}
+                        >
+                          LEVEL {monument.level}
+                        </Badge>
+                      </div>
+                    </div>
 
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Coins className="h-5 w-5 text-[#00D4FF]" />
-                          <span className="font-black">{monument.totalStaked.toLocaleString()} TOKENS</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Users className="h-5 w-5 text-[#00D4FF]" />
-                          <span className="font-black">{monument.fans} FANS</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <TrendingUp className="h-5 w-5 text-green-600" />
-                          <span className="font-black text-green-600">+12% THIS WEEK</span>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                      <div className="flex items-center gap-2 bg-gray-100 p-3 rounded border-2 border-black">
+                        <Coins className="h-5 w-5 text-yellow-600" />
+                        <div>
+                          <p className="text-sm font-bold text-gray-600">STAKED</p>
+                          <p className="font-black">{monument.totalStaked.toLocaleString()}</p>
                         </div>
                       </div>
+                      <div className="flex items-center gap-2 bg-gray-100 p-3 rounded border-2 border-black">
+                        <Users className="h-5 w-5 text-blue-600" />
+                        <div>
+                          <p className="text-sm font-bold text-gray-600">FANS</p>
+                          <p className="font-black">{monument.fans}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 bg-gray-100 p-3 rounded border-2 border-black">
+                        <MapPin className="h-5 w-5 text-red-600" />
+                        <div>
+                          <p className="text-sm font-bold text-gray-600">DISTANCE</p>
+                          <p className="font-black">{monument.distance} KM</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 bg-gray-100 p-3 rounded border-2 border-black">
+                        <Trophy className="h-5 w-5 text-purple-600" />
+                        <div>
+                          <p className="text-sm font-bold text-gray-600">RANKING</p>
+                          <p className="font-black">#{monument.ranking}</p>
+                        </div>
+                      </div>
+                    </div>
 
-                      <div className="space-y-2">
-                        <div className="w-full bg-gray-200 h-4 border-2 border-black">
-                          <div
-                            className="h-full bg-[#00D4FF]"
-                            style={{ width: `${(monument.level / 5) * 100}%` }}
-                          ></div>
-                        </div>
-                        <p className="font-black text-sm">LEVEL {monument.level}/5</p>
-                        <p className="font-bold text-xs text-gray-500">
-                          {monument.level < 5
-                            ? `${(monument.level + 1) * 25000 - monument.totalStaked} TOKENS TO NEXT LEVEL`
-                            : "MAX LEVEL"}
-                        </p>
-                      </div>
-
-                      <div className="flex flex-col gap-2">
-                        <Link href={`/monument/${monument.id}`}>
-                          <Button className="w-full bg-[#00D4FF] text-black font-black border-2 border-black">
-                            <Trophy className="mr-2 h-4 w-4" />
-                            VIEW STATS
-                          </Button>
-                        </Link>
-                        <Link href="/ar-viewer">
-                          <Button className="w-full bg-black text-white font-black border-2 border-black">
-                            <Eye className="mr-2 h-4 w-4" />
-                            AR VIEW
-                          </Button>
-                        </Link>
-                      </div>
+                    <div className="flex gap-3">
+                      <Link href={`/monument/${monument.id}`} className="flex-1">
+                        <Button className="w-full bg-black text-white font-black border-2 border-black hover:bg-gray-800">
+                          <Eye className="mr-2 h-4 w-4" />
+                          VIEW DETAILS
+                        </Button>
+                      </Link>
+                      <Link href={`/ar-viewer?monumentId=${monument.id}`}>
+                        <Button className="bg-[#00D4FF] text-black font-black border-2 border-black hover:bg-blue-400">
+                          <TrendingUp className="mr-2 h-4 w-4" />
+                          AR VIEW
+                        </Button>
+                      </Link>
                     </div>
                   </CardContent>
                 </Card>
