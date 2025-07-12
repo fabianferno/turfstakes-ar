@@ -52,8 +52,8 @@ export default function ConnectWallet() {
                             }
 
                             return (
-                                <div className="flex gap-2">
-                                    <Button
+                                <div className="flex gap-4 items-center justify-start">
+                                    {/* <Button
                                         onClick={openChainModal}
                                         className="bg-[#00D4FF] text-black font-black border-4 border-white hover:bg-white hover:text-black transform hover:scale-105 transition-all duration-200 shadow-[4px_4px_0px_0px_#ffffff] hover:shadow-[6px_6px_0px_0px_#ffffff]"
                                     >
@@ -78,17 +78,16 @@ export default function ConnectWallet() {
                                             </div>
                                         )}
                                         {chain.name}
-                                    </Button>
+                                    </Button> */}
 
                                     <Button
                                         onClick={openAccountModal}
                                         className="bg-[#00D4FF] text-black font-black border-4 border-white hover:bg-white hover:text-black transform hover:scale-105 transition-all duration-200 shadow-[4px_4px_0px_0px_#ffffff] hover:shadow-[6px_6px_0px_0px_#ffffff]"
                                     >
                                         {account.displayName}
-                                        {account.displayBalance
-                                            ? ` (${account.displayBalance})`
-                                            : ''}
                                     </Button>
+
+                                    <p className='text-white'>{account.displayBalance}</p>
                                 </div>
                             );
                         })()}

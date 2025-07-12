@@ -1,39 +1,38 @@
+'use client'
+
 import type { Metadata } from 'next'
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
-import { MapPin, Camera, Eye, Coins, Globe, Smartphone } from "lucide-react"
+import { MapPin, Camera, Eye, Coins, Globe, Smartphone, Menu, X } from "lucide-react"
 import WalletProvider from "@/components/wallet-provider"
 import ConnectWallet from "@/components/connect-wallet"
 import TokenFaucetModal from "@/components/token-faucet-modal"
 import './globals.css'
 import { Toaster } from "@/components/ui/toaster"
-
-export const metadata: Metadata = {
-  title: 'TurfStake - Claim the World for Your Club',
-  description: 'Stake Chiliz fan tokens to build evolving AR monuments at real locations. Earn from ads, unlock merch, and turn the world into your team\'s territory.',
-  generator: 'Next.js',
-}
+import Image from "next/image"
+import { useState } from "react"
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   return (
     <html lang="en">
       <body className="flex flex-col min-h-screen bg-black text-white w-full">
         <WalletProvider>
           {/* Header */}
-          <header className="px-4 lg:px-6 h-20 flex items-center border-b-4 border-[#00D4FF] bg-black">
+          <header className="px-4 lg:px-6 h-20 flex items-center border-b-4 border-[#00D4FF] bg-black relative">
             <Link href="/" className="flex items-center justify-center">
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-[#00D4FF] border-4 border-white transform rotate-3 flex items-center justify-center shadow-[4px_4px_0px_0px_#ffffff]">
-                  <span className="text-black font-black text-xl transform -rotate-3">T</span>
-                </div>
-                <span className="font-black text-2xl tracking-tight transform -skew-x-6">TURFSTAKE</span>
+                <Image src="/logo.png" alt="TurfStake Logo" width={48} height={48} className="w-12 h-12 sm:w-20 sm:h-20 object-contain my-2 bg-[#00D4FF]" />
+                <span className="font-black text-xl sm:text-2xl tracking-tight transform -skew-x-6">TURFSTAKE</span>
               </div>
             </Link>
-            <nav className="ml-auto flex gap-6 items-center">
+
+            {/* Desktop Navigation */}
+            <nav className="ml-auto hidden lg:flex gap-6 items-center">
               <Link
                 href="/map"
                 className="text-lg font-black hover:text-[#00D4FF] transition-colors border-b-2 border-transparent hover:border-[#00D4FF] pb-1"
@@ -59,7 +58,68 @@ export default function RootLayout({
                 <ConnectWallet />
               </div>
             </nav>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="ml-auto lg:hidden"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle mobile menu"
+            >
+              {mobileMenuOpen ? (
+                <X className="h-6 w-6 text-white" />
+              ) : (
+                <Menu className="h-6 w-6 text-white" />
+              )}
+            </button>
           </header>
+
+          {/* Mobile Menu Overlay */}
+          {mobileMenuOpen && (
+            <div className="fixed inset-0 z-50 lg:hidden">
+              <div className="fixed inset-0 bg-black/80" onClick={() => setMobileMenuOpen(false)} />
+              <div className="fixed right-0 top-0 h-full w-full max-w-sm bg-black border-l-4 border-[#00D4FF] p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <span className="font-black text-xl text-white">MENU</span>
+                  <button
+                    onClick={() => setMobileMenuOpen(false)}
+                    aria-label="Close mobile menu"
+                  >
+                    <X className="h-6 w-6 text-white" />
+                  </button>
+                </div>
+
+                <nav className="space-y-6">
+                  <Link
+                    href="/map"
+                    className="block text-lg font-black text-white hover:text-[#00D4FF] transition-colors border-b-2 border-transparent hover:border-[#00D4FF] pb-1"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    MAP
+                  </Link>
+                  <Link
+                    href="/create-campaign"
+                    className="block text-lg font-black text-white hover:text-[#00D4FF] transition-colors border-b-2 border-transparent hover:border-[#00D4FF] pb-1"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    CAMPAIGN
+                  </Link>
+                  <Link
+                    href="/ar-viewer"
+                    className="block text-lg font-black text-white hover:text-[#00D4FF] transition-colors border-b-2 border-transparent hover:border-[#00D4FF] pb-1"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    AR VIEW
+                  </Link>
+
+                  {/* Mobile Wallet Components */}
+                  <div className="pt-6 border-t border-gray-800 space-y-4">
+                    <TokenFaucetModal />
+                    <ConnectWallet />
+                  </div>
+                </nav>
+              </div>
+            </div>
+          )}
 
           {/* Main Content */}
           <main className="">

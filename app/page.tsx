@@ -19,7 +19,7 @@ export default function TurfStakeHome() {
                   STAKE • BUILD • DOMINATE
                 </Badge>
               </div>
-              <h1 className="text-4xl md:text-7xl lg:text-9xl font-black tracking-tighter leading-none">
+              <h1 className="text-6xl md:text-7xl lg:text-9xl font-black tracking-tighter leading-none">
                 <span className="block transform -skew-y-1">CLAIM THE</span>
                 <span className="block text-[#00D4FF] transform skew-y-1">WORLD</span>
                 <span className="block transform -skew-y-1">FOR YOUR</span>

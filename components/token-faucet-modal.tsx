@@ -114,7 +114,7 @@ export default function TokenFaucetModal() {
                         className="bg-[#00D4FF] text-black font-black border-4 border-white hover:bg-white hover:text-black transform hover:scale-105 transition-all duration-200 shadow-[4px_4px_0px_0px_#ffffff] hover:shadow-[6px_6px_0px_0px_#ffffff]"
                     >
                         <Coins className="mr-2 h-4 w-4" />
-                        FAUCET
+                        Get Fan Tokens
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="bg-black border-4 border-[#00D4FF] text-white max-w-md">
@@ -138,7 +138,7 @@ export default function TokenFaucetModal() {
                     className="bg-[#00D4FF] text-black font-black border-4 border-white hover:bg-white hover:text-black transform hover:scale-105 transition-all duration-200 shadow-[4px_4px_0px_0px_#ffffff] hover:shadow-[6px_6px_0px_0px_#ffffff]"
                 >
                     <Coins className="mr-2 h-4 w-4" />
-                    FAUCET
+                    Get Fan Tokens
                 </Button>
             </DialogTrigger>
             <DialogContent className="bg-black border-4 border-[#00D4FF] text-white max-w-4xl max-h-[80vh] overflow-y-auto">
