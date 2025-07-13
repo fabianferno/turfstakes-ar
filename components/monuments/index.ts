@@ -7,9 +7,9 @@ export { Level4Monument } from "./level-4-monument";
 export { Level5Monument } from "./level-5-monument";
 export {
   useMonumentTexture,
-  Logo3D,
-  BrutalistBase,
-  LogoSpotlights,
+  RotatingLogo3D,
+  MonumentFloor,
+  MonumentSpotlights,
   MONUMENT_CONFIGS,
 } from "./base-monument";
 export type { MonumentProps, MonumentMeshProps } from "./base-monument";

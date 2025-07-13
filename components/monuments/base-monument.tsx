@@ -35,26 +35,27 @@ export const useMonumentTexture = (logoUrl: string) => {
     return texture
 }
 
-// 3D Logo Component - The Star of the Show
-export const Logo3D: React.FC<{
+// Rotating 3D Logo Component
+export const RotatingLogo3D: React.FC<{
     logoTexture: THREE.Texture
     clubColor: string
     clubName: string
     scale?: number
-}> = ({ logoTexture, clubColor, clubName, scale = 1 }) => {
+    height?: number
+}> = ({ logoTexture, clubColor, clubName, scale = 1, height = 3 }) => {
     const logoRef = useRef<THREE.Group>(null)
 
     useFrame((state) => {
         if (logoRef.current) {
+            // Continuous rotation on Y axis
+            logoRef.current.rotation.y += 0.01
             // Gentle floating animation
-            logoRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.1
-            // Slight rotation to catch light
-            logoRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.2
+            logoRef.current.position.y = height + Math.sin(state.clock.elapsedTime * 0.5) * 0.1
         }
     })
 
     return (
-        <group ref={logoRef}>
+        <group ref={logoRef} position={[0, height, 0]}>
             {/* Front-facing Logo */}
             <mesh position={[0, 0, 0.2]} renderOrder={100}>
                 <planeGeometry args={[2 * scale, 2 * scale]} />
@@ -68,7 +69,7 @@ export const Logo3D: React.FC<{
             </mesh>
 
             {/* Back-facing Logo (mirrored) */}
-            <mesh position={[0, 0, 0.2]} rotation={[0, Math.PI, 0]} renderOrder={100}>
+            <mesh position={[0, 0, -0.2]} rotation={[0, Math.PI, 0]} renderOrder={100}>
                 <planeGeometry args={[2 * scale, 2 * scale]} />
                 <meshLambertMaterial
                     map={logoTexture}
@@ -79,7 +80,7 @@ export const Logo3D: React.FC<{
                 />
             </mesh>
 
-            {/* Logo Backing for 3D Effect - Double Sided */}
+            {/* Logo Backing for 3D Effect */}
             <mesh position={[0, 0, 0]} renderOrder={99}>
                 <planeGeometry args={[2.1 * scale, 2.1 * scale]} />
                 <meshLambertMaterial
@@ -90,9 +91,9 @@ export const Logo3D: React.FC<{
                 />
             </mesh>
 
-            {/* 3D Extrusion Frame - Position behind logo */}
-            <mesh position={[0, 0, -0.1]} renderOrder={98}>
-                <boxGeometry args={[2.2 * scale, 2.2 * scale, 0.2]} />
+            {/* 3D Extrusion Frame */}
+            <mesh position={[0, 0, 0]} renderOrder={98}>
+                <boxGeometry args={[2.2 * scale, 2.2 * scale, 0.4]} />
                 <meshStandardMaterial
                     color="#68d4fc"
                     metalness={0.8}
@@ -100,7 +101,7 @@ export const Logo3D: React.FC<{
                 />
             </mesh>
 
-            {/* Front-facing Club Name Text */}
+            {/* Club Name Text */}
             <Center position={[0, -1.5 * scale, 0.3]} renderOrder={101}>
                 <mesh position={[0, 0, 0]}>
                     <planeGeometry args={[1.5 * scale, 0.3 * scale]} />
@@ -108,20 +109,7 @@ export const Logo3D: React.FC<{
                         color="#ffffff"
                         emissive="#ffffff"
                         emissiveIntensity={0.2}
-                        side={THREE.FrontSide}
-                    />
-                </mesh>
-            </Center>
-
-            {/* Back-facing Club Name Text */}
-            <Center position={[0, -1.5 * scale, 0.3]} rotation={[0, Math.PI, 0]} renderOrder={101}>
-                <mesh position={[0, 0, 0]}>
-                    <planeGeometry args={[1.5 * scale, 0.3 * scale]} />
-                    <meshLambertMaterial
-                        color="#ffffff"
-                        emissive="#ffffff"
-                        emissiveIntensity={0.2}
-                        side={THREE.FrontSide}
+                        side={THREE.DoubleSide}
                     />
                 </mesh>
             </Center>
@@ -129,29 +117,28 @@ export const Logo3D: React.FC<{
     )
 }
 
-// Brutalist Base Platform
-export const BrutalistBase: React.FC<{
-    level: number
-    clubColor: string
+// Floor Component
+export const MonumentFloor: React.FC<{
     radius?: number
-}> = ({ level, clubColor, radius = 3 }) => {
-    const baseRef = useRef<THREE.Group>(null)
+    clubColor: string
+}> = ({ radius = 6, clubColor }) => {
+    const floorRef = useRef<THREE.Mesh>(null)
 
     return (
-        <group ref={baseRef}>
-            {/* Main brutalist platform */}
-            <mesh position={[0, -0.5, 0]}>
-                <cylinderGeometry args={[radius, radius + 0.5, 0.8, 6]} />
+        <group>
+            {/* Main floor */}
+            <mesh ref={floorRef} position={[0, -0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                <circleGeometry args={[radius, 32]} />
                 <meshStandardMaterial
                     color="#2a2a2a"
-                    roughness={0.9}
+                    roughness={0.8}
                     metalness={0.1}
                 />
             </mesh>
 
-            {/* Color accent ring */}
-            <mesh position={[0, -0.2, 0]}>
-                <torusGeometry args={[radius - 0.2, 0.1, 8, 16]} />
+            {/* Floor border */}
+            <mesh position={[0, 0, 0]}>
+                <torusGeometry args={[radius - 0.1, 0.05, 8, 32]} />
                 <meshLambertMaterial
                     color="#68d4fc"
                     emissive="#68d4fc"
@@ -159,30 +146,21 @@ export const BrutalistBase: React.FC<{
                 />
             </mesh>
 
-            {/* Angular support beams */}
-            {Array.from({ length: level + 2 }, (_, i) => (
-                <mesh
-                    key={i}
-                    position={[
-                        Math.cos(i * (Math.PI * 2) / (level + 2)) * (radius - 0.5),
-                        0,
-                        Math.sin(i * (Math.PI * 2) / (level + 2)) * (radius - 0.5)
-                    ]}
-                    rotation={[0, i * (Math.PI * 2) / (level + 2), 0]}
-                >
-                    <boxGeometry args={[0.3, 1.5, 0.3]} />
-                    <meshStandardMaterial
-                        color="#1a1a1a"
-                        roughness={0.8}
-                    />
-                </mesh>
-            ))}
+            {/* Inner circle accent */}
+            <mesh position={[0, 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                <circleGeometry args={[radius * 0.3, 32]} />
+                <meshStandardMaterial
+                    color="#3a3a3a"
+                    roughness={0.6}
+                    metalness={0.2}
+                />
+            </mesh>
         </group>
     )
 }
 
-// Spotlights for Logo
-export const LogoSpotlights: React.FC<{
+// Spotlights for Monument
+export const MonumentSpotlights: React.FC<{
     clubColor: string
     intensity?: number
 }> = ({ clubColor, intensity = 2 }) => {
@@ -190,9 +168,9 @@ export const LogoSpotlights: React.FC<{
         <group>
             {/* Main spotlight from above */}
             <spotLight
-                position={[0, 8, 0]}
+                position={[0, 10, 0]}
                 target-position={[0, 0, 0]}
-                angle={0.3}
+                angle={0.4}
                 penumbra={0.5}
                 intensity={intensity}
                 color="#ffffff"
@@ -201,31 +179,21 @@ export const LogoSpotlights: React.FC<{
 
             {/* Accent spotlights */}
             <spotLight
-                position={[3, 5, 3]}
+                position={[4, 6, 4]}
                 target-position={[0, 0, 0]}
-                angle={0.4}
+                angle={0.5}
                 penumbra={0.7}
                 intensity={intensity * 0.6}
                 color="#68d4fc"
             />
 
             <spotLight
-                position={[-3, 5, 3]}
+                position={[-4, 6, 4]}
                 target-position={[0, 0, 0]}
-                angle={0.4}
+                angle={0.5}
                 penumbra={0.7}
                 intensity={intensity * 0.6}
                 color="#68d4fc"
-            />
-
-            {/* Back rim light */}
-            <spotLight
-                position={[0, 3, -5]}
-                target-position={[0, 0, 0]}
-                angle={0.6}
-                penumbra={0.8}
-                intensity={intensity * 0.3}
-                color="#ffffff"
             />
         </group>
     )
@@ -233,9 +201,9 @@ export const LogoSpotlights: React.FC<{
 
 // Monument level configurations
 export const MONUMENT_CONFIGS = {
-    1: { height: 2, complexity: 'simple', elements: 3, radius: 2.5 },
-    2: { height: 3, complexity: 'basic', elements: 5, radius: 3 },
-    3: { height: 4, complexity: 'intermediate', elements: 7, radius: 3.5 },
-    4: { height: 5, complexity: 'advanced', elements: 9, radius: 4 },
-    5: { height: 6, complexity: 'legendary', elements: 12, radius: 4.5 }
+    1: { height: 3, logoHeight: 2.5, floorRadius: 4 },
+    2: { height: 4, logoHeight: 3.5, floorRadius: 5 },
+    3: { height: 5, logoHeight: 4.5, floorRadius: 6 },
+    4: { height: 6, logoHeight: 5.5, floorRadius: 7 },
+    5: { height: 7, logoHeight: 6.5, floorRadius: 8 }
 } as const 

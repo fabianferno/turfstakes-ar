@@ -72,11 +72,10 @@ const HitTestSetup = () => {
         if (!referenceSpace) return
 
         // Initialize hit test source
-        if (!hitTestSourceRef.current && !initializingRef.current && session.requestHitTestSource) {
+        if (!hitTestSourceRef.current && !initializingRef.current && session?.requestHitTestSource) {
             initializingRef.current = true
-            const requestHitTestSource = session.requestHitTestSource
-            if (requestHitTestSource) {
-                requestHitTestSource({ space: referenceSpace })
+            if (referenceSpace) {
+                session?.requestHitTestSource({ space: referenceSpace })
                     .then((source) => {
                         hitTestSourceRef.current = source
                         console.log('Hit test source initialized')
@@ -170,7 +169,7 @@ const ARMonument: React.FC<{
                         clubName={monument.club}
                         level={monument.level}
                         position={[0, 0, 0]}
-                        scale={[0.3, 0.3, 0.3]}
+                        scale={[0.1, 0.1, 0.1]}
                         isAR={true}
                     />
                 </Suspense>

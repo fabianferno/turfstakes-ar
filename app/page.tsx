@@ -8,58 +8,240 @@ import Link from "next/link"
 import { Suspense } from "react"
 import { Canvas } from "@react-three/fiber"
 import { OrbitControls } from "@react-three/drei"
-import { Monument } from "@/components/monuments"
+import { Monument, } from "@/components/monuments"
 import { CLUB_TOKENS } from "@/lib/contracts"
+import { motion } from "framer-motion"
 
 export default function TurfStakeHome() {
+  // Sponsor logos for the monuments
+  const sponsorLogos = [
+    { id: 'binance', name: 'Binance', imageUrl: '/sponsors/binance.png', campaign: 'Trade with Binance - The world\'s leading crypto exchange!' },
+    { id: 'nike', name: 'Nike', imageUrl: '/sponsors/nike.png', campaign: 'Just Do It - Premium sports gear and apparel!' },
+    { id: 'qatar', name: 'Qatar', imageUrl: '/sponsors/qatar.png', campaign: 'Visit Qatar - Experience the beauty of the desert!' },
+    { id: 'okx', name: 'OKX', imageUrl: '/sponsors/okx.png', campaign: 'OKX - Your gateway to the crypto world!' },
+    { id: 'animoca', name: 'Animoca Brands', imageUrl: '/sponsors/animoca.png', campaign: 'Animoca Brands - Leading the way in Web3 gaming!' },
+  ]
+
+  // Ad campaigns for the text ticker
+  const adCampaigns = [
+    { id: '1', text: '🚀 Trade on Binance - Get 20% cashback on your first trade!', sponsor: 'Binance', color: '#F3BA2F' },
+    { id: '2', text: '⚡ Nike x Football - New collection available now!', sponsor: 'Nike', color: '#FF6900' },
+    { id: '3', text: '🏆 Qatar Airways - Fly to your next adventure!', sponsor: 'Qatar', color: '#5D1A35' },
+    { id: '4', text: '🌟 OKX Crypto Exchange - Start your Web3 journey today!', sponsor: 'OKX', color: '#000000' },
+    { id: '5', text: '🎮 Animoca Brands - Join the future of gaming!', sponsor: 'Animoca Brands', color: '#4A90E2' },
+  ]
+
   return (
     <>
       {/* Hero Section */}
-      <section className="w-full py-20 md:py-32 lg:py-40 bg-black relative overflow-hidden">
+      <section className="w-full py-20 md:py-32 lg:py-40 bg-black relative overflow-hidden" style={{ backgroundImage: 'url(/bg.webp)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
+        <div className="absolute inset-0 bg-black bg-opacity-80"></div>
         <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(0,212,255,0.1)_25%,rgba(0,212,255,0.1)_50%,transparent_50%,transparent_75%,rgba(0,212,255,0.1)_75%)] bg-[length:20px_20px]"></div>
         <div className="px-4 md:px-6 relative z-10">
           <div className="flex flex-col items-center space-y-8 text-center">
             <div className="space-y-6 w-full">
-              <div className="inline-block">
+              <motion.div
+                className="inline-block"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
                 <Badge className="mb-6 bg-[#00D4FF] text-black font-black text-lg px-6 py-3 border-4 border-white shadow-[6px_6px_0px_0px_#ffffff] transform rotate-1">
                   <Coins className="w-5 h-5 mr-2" />
                   STAKE • BUILD • DOMINATE
                 </Badge>
-              </div>
-              <h1 className="text-6xl md:text-7xl lg:text-9xl font-black tracking-tighter leading-none">
-                <span className="block transform -skew-y-1">CLAIM THE</span>
-                <span className="block text-[#00D4FF] transform skew-y-1">WORLD</span>
-                <span className="block transform -skew-y-1">FOR YOUR</span>
-                <span className="block text-[#00D4FF] transform skew-y-1">CLUB</span>
-              </h1>
-              <div className="max-w-4xl mx-auto">
-                <p className="text-xl md:text-2xl font-bold text-gray-300 leading-tight border-l-8 border-[#00D4FF] pl-6 text-left">
-                  STAKE CHILIZ FAN TOKENS TO BUILD EVOLVING AR MONUMENTS AT REAL LOCATIONS. EARN FROM ADS, UNLOCK
-                  MERCH, AND TURN THE WORLD INTO YOUR TEAM'S TERRITORY.
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-6">
-              <Link href="/map">
-                <Button
-                  size="lg"
-                  className="bg-[#00D4FF] hover:bg-[#00B8E6] text-black font-black text-xl px-12 py-6 border-4 border-white shadow-[8px_8px_0px_0px_#ffffff] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_#ffffff] transition-all"
+              </motion.div>
+
+              {/* Mobile Layout - Original */}
+              <div className="block md:hidden">
+                <motion.h1
+                  className="text-6xl font-black tracking-tighter leading-none"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 1, delay: 0.2 }}
                 >
-                  EXPLORE MAP
-                  <Globe className="ml-3 h-6 w-6" />
-                </Button>
+                  <motion.span
+                    className="block transform -skew-y-1"
+                    initial={{ x: -50, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.4 }}
+                  >
+                    CLAIM THE
+                  </motion.span>
+                  <motion.span
+                    className="block text-[#00D4FF] transform skew-y-1"
+                    initial={{ x: 50, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.6 }}
+                  >
+                    WORLD
+                  </motion.span>
+                  <motion.span
+                    className="block transform -skew-y-1"
+                    initial={{ x: -50, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.8 }}
+                  >
+                    FOR YOUR
+                  </motion.span>
+                  <motion.span
+                    className="block text-[#00D4FF] transform skew-y-1"
+                    initial={{ x: 50, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 1.0 }}
+                  >
+                    CLUB
+                  </motion.span>
+                </motion.h1>
+              </div>
+
+              {/* Desktop Layout - Split */}
+              <div className="hidden md:block relative">
+                <div className="flex items-center justify-between max-w-7xl mx-auto relative min-h-[300px] lg:min-h-[400px]">
+                  {/* Left Side - "CLAIM THE WORLD" */}
+                  <motion.div
+                    className="flex-1 text-left"
+                    initial={{ x: -100, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 1, delay: 0.3 }}
+                  >
+                    <h1 className="text-5xl md:text-6xl lg:text-8xl font-black tracking-tighter leading-none">
+                      <motion.span
+                        className="block transform -skew-y-1"
+                        initial={{ y: 30, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 0.8, delay: 0.5 }}
+                      >
+                        CLAIM THE
+                      </motion.span>
+                      <motion.span
+                        className="block text-[#00D4FF] transform skew-y-1"
+                        initial={{ y: 30, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 0.8, delay: 0.7 }}
+                      >
+                        WORLD
+                      </motion.span>
+                    </h1>
+                  </motion.div>
+
+                  {/* Animated Slanting Line */}
+                  <motion.div
+                    className="absolute left-1/2 top-0 bottom-0 flex items-center justify-center transform -translate-x-1/2"
+                    initial={{ scaleY: 0, opacity: 0 }}
+                    animate={{ scaleY: 1, opacity: 1 }}
+                    transition={{ duration: 1.2, delay: 0.9 }}
+                  >
+                    <div className="relative">
+                      <motion.div
+                        className="w-2 h-64 lg:h-80 bg-[#00D4FF] transform rotate-12 origin-center"
+                        animate={{
+                          boxShadow: [
+                            "0 0 20px rgba(0, 212, 255, 0.5)",
+                            "0 0 40px rgba(0, 212, 255, 0.8)",
+                            "0 0 20px rgba(0, 212, 255, 0.5)"
+                          ]
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          repeatType: "reverse"
+                        }}
+                      />
+                      <motion.div
+                        className="absolute top-0 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white rounded-full"
+                        animate={{
+                          y: [0, 240, 0],
+                          scale: [1, 1.2, 1]
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      />
+                    </div>
+                  </motion.div>
+
+                  {/* Right Side - "FOR YOUR CLUB" */}
+                  <motion.div
+                    className="flex-1 text-right"
+                    initial={{ x: 100, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 1, delay: 0.3 }}
+                  >
+                    <h1 className="text-5xl md:text-6xl lg:text-8xl font-black tracking-tighter leading-none">
+                      <motion.span
+                        className="block transform -skew-y-1"
+                        initial={{ y: 30, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 0.8, delay: 0.9 }}
+                      >
+                        FOR YOUR
+                      </motion.span>
+                      <motion.span
+                        className="block text-[#00D4FF] transform skew-y-1"
+                        initial={{ y: 30, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 0.8, delay: 1.1 }}
+                      >
+                        CLUB
+                      </motion.span>
+                    </h1>
+                  </motion.div>
+                </div>
+              </div>
+              <motion.div
+                className="max-w-4xl mx-auto"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 1.2 }}
+              >
+                <p className="text-xl md:text-2xl font-bold text-gray-300 leading-tight border-l-8 border-[#00D4FF] pl-6 text-left">
+                  stake tokens to build evolving AR monuments for their favorite clubs in real-world locations - collect rewards
+
+                  "turf wars meet pokemon go"
+                </p>
+              </motion.div>
+            </div>
+            <motion.div
+              className="flex flex-col sm:flex-row gap-6"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.4 }}
+            >
+              <Link href="/map">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                >
+                  <Button
+                    size="lg"
+                    className="bg-[#00D4FF] hover:bg-[#00B8E6] text-black font-black text-xl px-12 py-6 border-4 border-white shadow-[8px_8px_0px_0px_#ffffff] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_#ffffff] transition-all"
+                  >
+                    EXPLORE MAP
+                    <Globe className="ml-3 h-6 w-6" />
+                  </Button>
+                </motion.div>
               </Link>
               <Link href="/create">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-4 border-[#00D4FF] text-[#00D4FF] hover:bg-[#00D4FF] hover:text-black font-black text-xl px-12 py-6 shadow-[8px_8px_0px_0px_#00D4FF] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_#00D4FF] transition-all bg-transparent"
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 >
-                  CREATE MONUMENT
-                  <Camera className="ml-3 h-6 w-6" />
-                </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="border-4 border-[#00D4FF] text-[#00D4FF] hover:bg-[#00D4FF] hover:text-black font-black text-xl px-12 py-6 shadow-[8px_8px_0px_0px_#00D4FF] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_#00D4FF] transition-all bg-transparent"
+                  >
+                    CREATE MONUMENT
+                    <Camera className="ml-3 h-6 w-6" />
+                  </Button>
+                </motion.div>
               </Link>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -159,31 +341,31 @@ export default function TurfStakeHome() {
                 <div className="mb-4 transform hover:scale-105 transition-all">
                   <div className={`${monumentLevel.height} w-full bg-gray-900 rounded-lg border-4 border-white overflow-hidden shadow-[4px_4px_0px_0px_#00D4FF]`}>
                     <Canvas
-                      camera={{ position: [0, 2, 6], fov: 45 }}
+
+                      camera={{ position: [0, 2, 6], fov: 60 }}
                       style={{ width: '100%', height: '100%' }}
                     >
+                      {/* Monument component */}
                       <Suspense fallback={null}>
                         <Monument
                           clubLogo={CLUB_TOKENS[0].tokenImage}
                           clubColor="#68d4fc"
                           clubName={CLUB_TOKENS[0].name}
                           level={monumentLevel.level}
-                          position={[0, 0, 0]}
+                          position={[0, -3, -8]}
                           scale={[0.8, 0.8, 0.8]}
                           isAR={false}
+                        // sponsorLogos={sponsorLogos}
+                        // adCampaigns={adCampaigns}
                         />
                       </Suspense>
 
-                      <ambientLight intensity={0.5} />
-                      <directionalLight position={[10, 10, 5]} intensity={1} />
-                      <pointLight position={[0, 5, 0]} intensity={0.3} color="#ffffff" />
-
+                      <ambientLight intensity={0.4} />
+                      <directionalLight position={[5, 5, 5]} intensity={0.6} />
                       <OrbitControls
-                        enablePan={false}
-                        enableZoom={false}
-                        enableRotate={false}
-                        autoRotate={true}
-                        autoRotateSpeed={2}
+                        enableZoom={true}
+                        enablePan={true}
+                        enableRotate={true}
                       />
                     </Canvas>
                   </div>
