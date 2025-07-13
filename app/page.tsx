@@ -342,7 +342,7 @@ export default function TurfStakeHome() {
                   <div className={`${monumentLevel.height} w-full bg-gray-900 rounded-lg border-4 border-white overflow-hidden shadow-[4px_4px_0px_0px_#00D4FF]`}>
                     <Canvas
 
-                      camera={{ position: [0, 2, 6], fov: 60 }}
+                      camera={{ position: [0, 2, 6], fov: 60, near: 0.01, far: 1000 }}
                       style={{ width: '100%', height: '100%' }}
                     >
                       {/* Monument component */}

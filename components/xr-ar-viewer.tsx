@@ -260,7 +260,7 @@ export const XRARViewer: React.FC<XRARViewerProps> = ({
                 {isXRSupported ? 'ENTER AR' : 'AR NOT SUPPORTED'}
             </button>
 
-            <Canvas shadows camera={{ position: [4, 0, 6], fov: 35 }} style={{ width: '100%', height: '100%' }}>
+            <Canvas shadows camera={{ position: [4, 0, 6], fov: 35, near: 0.01, far: 1000 }} style={{ width: '100%', height: '100%' }}>
                 <XR store={store}>
                     <ARMonument monument={selectedMonument} />
                     <OrbitControls />

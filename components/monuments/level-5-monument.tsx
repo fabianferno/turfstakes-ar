@@ -2,7 +2,7 @@
 
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { MonumentProps, useMonumentTexture, RotatingLogo3D, MonumentFloor, MonumentSpotlights, MONUMENT_CONFIGS } from './base-monument'
+import { MonumentProps, useMonumentTexture, RotatingLogo3D, MonumentFloor, MonumentSpotlights, SponsorDisplay, MONUMENT_CONFIGS } from './base-monument'
 import * as THREE from 'three'
 
 export const Level5Monument: React.FC<MonumentProps> = ({
@@ -29,6 +29,9 @@ export const Level5Monument: React.FC<MonumentProps> = ({
 
     return (
         <group ref={meshRef} position={position} scale={scale} rotation={rotation}>
+            {/* Sponsor Display */}
+            <SponsorDisplay position={[0, 0.5, 9]} scale={1.2} />
+
             {/* Monument Floor */}
             <MonumentFloor radius={config.floorRadius} clubColor={clubColor} />
 
@@ -121,7 +124,7 @@ export const Level5Monument: React.FC<MonumentProps> = ({
             </group>
 
             {/* Monument Spotlights */}
-            <MonumentSpotlights clubColor={clubColor} intensity={2.5} />
+            <MonumentSpotlights clubColor={clubColor} intensity={2.3} />
 
             {/* Ambient lighting */}
             <ambientLight intensity={0.4} />

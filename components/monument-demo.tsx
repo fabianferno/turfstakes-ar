@@ -127,7 +127,7 @@ export const MonumentDemo: React.FC = () => {
                     <div className="w-full h-96 bg-gray-900 rounded-lg border-4 border-[#00D4FF] overflow-hidden relative">
                         {!isARView ? (
                             <Canvas
-                                camera={{ position: [0, 2, 8], fov: 60 }}
+                                camera={{ position: [0, 2, 8], fov: 60, near: 0.01, far: 1000 }}
                                 style={{ width: '100%', height: '100%' }}
                             >
                                 <Monument

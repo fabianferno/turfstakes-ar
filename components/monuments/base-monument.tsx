@@ -1,9 +1,23 @@
 "use client"
 
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { useTexture, Center } from '@react-three/drei'
+import { useTexture, Center, Text } from '@react-three/drei'
 import * as THREE from 'three'
+
+// Sponsor data
+const sponsorData = [
+    { id: 'binance', name: 'Binance', imageUrl: '/sponsors/binance.png', campaign: 'Trade with Binance - The world\'s leading crypto exchange!', color: '#F3BA2F' },
+    { id: 'nike', name: 'Nike', imageUrl: '/sponsors/nike.png', campaign: 'Just Do It - Premium sports gear and apparel!', color: '#FF6900' },
+    { id: 'qatar', name: 'Qatar', imageUrl: '/sponsors/qatar.png', campaign: 'Visit Qatar - Experience the beauty of the desert!', color: '#5D1A35' },
+    { id: 'okx', name: 'OKX', imageUrl: '/sponsors/okx.png', campaign: 'OKX - Your gateway to the crypto world!', color: '#000000' },
+    { id: 'animoca', name: 'Animoca Brands', imageUrl: '/sponsors/animoca.png', campaign: 'Animoca Brands - Leading the way in Web3 gaming!', color: '#4A90E2' },
+]
+
+// Function to get a random sponsor
+export const getRandomSponsor = () => {
+    return sponsorData[Math.floor(Math.random() * sponsorData.length)]
+}
 
 export interface MonumentProps {
     clubLogo: string
@@ -206,4 +220,57 @@ export const MONUMENT_CONFIGS = {
     3: { height: 5, logoHeight: 4.5, floorRadius: 6 },
     4: { height: 6, logoHeight: 5.5, floorRadius: 7 },
     5: { height: 7, logoHeight: 6.5, floorRadius: 8 }
-} as const 
+} as const
+
+// Sponsor Display Component
+export const SponsorDisplay: React.FC<{
+    position?: [number, number, number]
+    scale?: number
+}> = ({ position = [0, 0, 6], scale = 1 }) => {
+    const sponsor = useMemo(() => getRandomSponsor(), [])
+    const sponsorTexture = useTexture(sponsor.imageUrl)
+
+    useEffect(() => {
+        if (sponsorTexture) {
+            sponsorTexture.flipY = false
+        }
+    }, [sponsorTexture])
+
+    return (
+        <group position={position} scale={scale} rotation={[-Math.PI / 2, 0, 0]}>
+            {/* Fixed black background */}
+            <mesh position={[0, 0, -0.01]}>
+                <planeGeometry args={[7, 2.5]} />
+                <meshStandardMaterial
+                    color="#000000"
+                    transparent={true}
+                    opacity={0.8}
+                />
+            </mesh>
+
+            {/* Sponsor Logo */}
+            <mesh position={[0, 0.5, 0]}>
+                <planeGeometry args={[2, 1]} />
+                <meshStandardMaterial
+                    map={sponsorTexture}
+                    transparent={true}
+                />
+            </mesh>
+
+            {/* Campaign Text - White color only */}
+            <Text
+                position={[0, -0.5, 0]}
+                fontSize={0.3}
+                color="#ffffff"
+                anchorX="center"
+                anchorY="middle"
+                maxWidth={6}
+                textAlign="center"
+                outlineWidth={0.02}
+                outlineColor="#000000"
+            >
+                {sponsor.campaign}
+            </Text>
+        </group>
+    )
+} 

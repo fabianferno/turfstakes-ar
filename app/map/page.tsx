@@ -137,7 +137,7 @@ export default function MapPage() {
         <main className="flex-1 p-6">
           <div className="container mx-auto">
             <div className="mb-8">
-              <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4 transform -skew-x-2">WORLD MAP</h1>
+              <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4 transform -skew-x-2">Vist and grow your club's monuments</h1>
               <div className="w-32 h-3 bg-[#00D4FF] transform skew-x-12 mb-4"></div>
               <p className="text-xl font-bold text-gray-300">DISCOVER MONUMENTS WORLDWIDE AND CLAIM YOUR TERRITORY</p>
             </div>
@@ -156,7 +156,7 @@ export default function MapPage() {
         <div className="container mx-auto">
           {/* Page Header */}
           <div className="mb-8">
-            <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4 transform -skew-x-2">WORLD MAP</h1>
+            <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4 transform -skew-x-2">Claim the world for your club</h1>
             <div className="w-32 h-3 bg-[#00D4FF] transform skew-x-12 mb-4"></div>
             <p className="text-xl font-bold text-gray-300">DISCOVER MONUMENTS WORLDWIDE AND CLAIM YOUR TERRITORY</p>
           </div>
@@ -169,7 +169,7 @@ export default function MapPage() {
                 placeholder="SEARCH MONUMENTS OR CLUBS..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-white text-black border-4 border-[#00D4FF] font-black"
+                className="pl-10 py-5 bg-white text-black border-4 border-[#00D4FF] font-black"
               />
             </div>
             <select
@@ -190,40 +190,52 @@ export default function MapPage() {
             </Button>
           </div>
 
-          {/* Current Location */}
-          {userLocation && (
-            <Card className="mb-8 bg-[#00D4FF] text-black border-4 border-white shadow-[8px_8px_0px_0px_#ffffff]">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <Navigation className="h-8 w-8" />
-                  <div>
-                    <h3 className="text-xl font-black">YOUR LOCATION</h3>
-                    <p className="font-bold">
-                      LAT: {userLocation.lat.toFixed(4)}, LNG: {userLocation.lng.toFixed(4)}
-                    </p>
+          {/* MAP SECTION */}
+          <div className="mb-12">
+            {/* Current Location */}
+            {userLocation && (
+              <Card className="mb-6 bg-[#00D4FF] text-black border-4 border-white shadow-[8px_8px_0px_0px_#ffffff]">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <Navigation className="h-8 w-8" />
+                    <div>
+                      <h3 className="text-xl font-black">YOUR LOCATION</h3>
+                      <p className="font-bold">
+                        LAT: {userLocation.lat.toFixed(4)}, LNG: {userLocation.lng.toFixed(4)}
+                      </p>
+                    </div>
+                    <Link href="/create" className="ml-auto">
+                      <Button className="bg-black text-white font-black">CREATE MONUMENT HERE</Button>
+                    </Link>
                   </div>
-                  <Link href="/create" className="ml-auto">
-                    <Button className="bg-black text-white font-black">CREATE MONUMENT HERE</Button>
-                  </Link>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Interactive Map */}
+            <Card className="bg-gray-900 border-4 border-[#00D4FF] shadow-[8px_8px_0px_0px_#00D4FF]">
+              <CardContent className="p-0">
+                <div className="relative">
+                  <OpenMap monuments={filteredMonuments} userLocation={userLocation} />
+                  <div className="absolute top-4 left-4 z-10">
+                    <Badge className="bg-[#00D4FF] text-black font-black border-2 border-black text-lg px-4 py-2">
+                      MAP GOES HERE
+                    </Badge>
+                  </div>
                 </div>
               </CardContent>
             </Card>
-          )}
+          </div>
 
-          {/* Interactive Map */}
-          <Card className="mb-8 bg-gray-900 border-4 border-[#00D4FF] shadow-[8px_8px_0px_0px_#00D4FF]">
-            <CardContent className="p-8">
-              <div className="mb-4">
-                <h3 className="text-2xl font-black text-white mb-2">INTERACTIVE MAP</h3>
-                <p className="font-bold text-gray-400">EXPLORE MONUMENTS AROUND THE WORLD</p>
-              </div>
-              <OpenMap monuments={filteredMonuments} userLocation={userLocation} />
-            </CardContent>
-          </Card>
-
-          {/* Monument List */}
+          {/* MONUMENT LIST SECTION */}
           <div className="space-y-6">
-            <h2 className="text-3xl font-black transform skew-x-2">MONUMENTS NEAR YOU ({filteredMonuments.length})</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-3xl font-black transform skew-x-2">LIST MONUMENTS HERE</h2>
+              <Badge className="bg-[#00D4FF] text-black font-black border-2 border-black text-lg px-4 py-2">
+                {filteredMonuments.length} MONUMENTS
+              </Badge>
+            </div>
+
             <div className="grid gap-6">
               {filteredMonuments.map((monument) => (
                 <Card
