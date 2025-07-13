@@ -87,7 +87,7 @@ export default function CreateCampaignPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen text-black bg-background">
       {/* Navigation */}
       <nav className="border-b-8 border-black bg-white">
         <div className="container py-6">
@@ -225,7 +225,7 @@ export default function CreateCampaignPage() {
                     <button
                       type="submit"
                       disabled={isPending || isConfirming || isUploading}
-                      className="bg-red-600 text-white border-4 border-black px-6 py-3 font-bold text-lg shadow-brutal hover:translate-y-1 hover:shadow-none transition-all flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="bg-red-600  border-4 border-black px-6 py-3 font-bold text-lg shadow-brutal hover:translate-y-1 hover:shadow-none transition-all flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isPending ? "CONFIRMING..." : isConfirming ? "DEPLOYING..." : isUploading ? "UPLOADING..." : "DEPLOY CAMPAIGN"}
                     </button>

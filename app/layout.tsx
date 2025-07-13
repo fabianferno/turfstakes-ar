@@ -46,6 +46,12 @@ export default function RootLayout({
                 CREATE
               </Link>
               <Link
+                href="/create-campaign"
+                className="text-lg font-black hover:text-[#00D4FF] transition-colors border-b-2 border-transparent hover:border-[#00D4FF] pb-1"
+              >
+                CAMPAIGN
+              </Link>
+              <Link
                 href="/ar-viewer"
                 className="text-lg font-black hover:text-[#00D4FF] transition-colors border-b-2 border-transparent hover:border-[#00D4FF] pb-1"
               >
