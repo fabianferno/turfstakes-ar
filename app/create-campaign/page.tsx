@@ -87,12 +87,15 @@ export default function CreateCampaignPage() {
   }
 
   return (
-    <div className="min-h-screen text-black bg-background">
+    <div className="min-h-screen text-white bg-black relative overflow-hidden" style={{ backgroundImage: 'url(/bg.webp)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
+      <div className="absolute inset-0 bg-black bg-opacity-80"></div>
+      <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(0,212,255,0.1)_25%,rgba(0,212,255,0.1)_50%,transparent_50%,transparent_75%,rgba(0,212,255,0.1)_75%)] bg-[length:20px_20px]"></div>
+
       {/* Navigation */}
-      <nav className="border-b-8 border-black bg-white">
+      <nav className="border-b-8 border-[#00D4FF] bg-white relative z-10">
         <div className="container py-6">
           <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2 text-2xl font-black">
+            <Link href="/" className="flex items-center gap-2 text-2xl font-black text-black">
               <ArrowLeft className="h-6 w-6" />
               BACK TO MAP
             </Link>
@@ -100,7 +103,7 @@ export default function CreateCampaignPage() {
         </div>
       </nav>
 
-      <main className="container py-12">
+      <main className="container py-12 relative z-10">
         <div className="max-w-7xl mx-auto">
           <div className="space-y-8">
             <div className="space-y-4">

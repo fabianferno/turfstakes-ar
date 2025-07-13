@@ -43,8 +43,8 @@ export default function MonumentStatsPage({ params }: { params: { id: string } }
     // Mock monument data
     const mockMonument: Monument = {
       id: Number.parseInt(params.id),
-      name: "Camp Nou Monument",
-      club: "FC Barcelona",
+      name: "Monument #1",
+      club: "JUV",
       level: 5,
       totalStaked: 125000,
       fans: 1250,
@@ -280,12 +280,12 @@ export default function MonumentStatsPage({ params }: { params: { id: string } }
                     <div
                       key={fan.id}
                       className={`p-4 border-4 border-black flex items-center justify-between ${index === 0
-                          ? "bg-yellow-500"
-                          : index === 1
-                            ? "bg-gray-300"
-                            : index === 2
-                              ? "bg-orange-400"
-                              : "bg-gray-100"
+                        ? "bg-yellow-500"
+                        : index === 1
+                          ? "bg-gray-300"
+                          : index === 2
+                            ? "bg-orange-400"
+                            : "bg-gray-100"
                         }`}
                     >
                       <div className="flex items-center gap-4">

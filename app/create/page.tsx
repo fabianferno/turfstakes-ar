@@ -18,7 +18,7 @@ export default function CreateMonumentPage() {
   const [step, setStep] = useState(1)
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null)
   const [anchorImage, setAnchorImage] = useState<string | null>(null)
-  const [monumentName, setMonumentName] = useState("")
+
   const [selectedClub, setSelectedClub] = useState("")
   const [isCapturing, setIsCapturing] = useState(false)
   const [createdMonumentId, setCreatedMonumentId] = useState<string | null>(null)
@@ -55,11 +55,11 @@ export default function CreateMonumentPage() {
     if (isSuccess) {
       toast({
         title: "Monument Created Successfully! 🎉",
-        description: `Your monument "${monumentName}" has been created.`,
+        description: `Your monument for ${selectedClub} has been created.`,
       })
       setStep(4)
     }
-  }, [isSuccess, monumentName, toast])
+  }, [isSuccess, selectedClub, toast])
 
   // Handle errors
   useEffect(() => {
@@ -145,8 +145,10 @@ export default function CreateMonumentPage() {
   // Show wallet connection if not connected
   if (!isConnected) {
     return (
-      <div className="flex flex-col min-h-screen bg-black text-white">
-        <main className="flex-1 p-6 flex items-center justify-center">
+      <div className="flex flex-col min-h-screen bg-black text-white relative overflow-hidden" style={{ backgroundImage: 'url(/bg.webp)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
+        <div className="absolute inset-0 bg-black bg-opacity-80"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(0,212,255,0.1)_25%,rgba(0,212,255,0.1)_50%,transparent_50%,transparent_75%,rgba(0,212,255,0.1)_75%)] bg-[length:20px_20px]"></div>
+        <main className="flex-1 p-6 flex items-center justify-center relative z-10">
           <Card className="bg-white text-black border-4 border-[#00D4FF] shadow-[8px_8px_0px_0px_#00D4FF] max-w-md">
             <CardContent className="p-8 text-center">
               <div className="space-y-6">
@@ -169,8 +171,10 @@ export default function CreateMonumentPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-black text-white">
-      <main className="flex-1 p-6">
+    <div className="flex flex-col min-h-screen bg-black text-white relative overflow-hidden" style={{ backgroundImage: 'url(/bg.webp)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
+      <div className="absolute inset-0 bg-black bg-opacity-80"></div>
+      <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(0,212,255,0.1)_25%,rgba(0,212,255,0.1)_50%,transparent_50%,transparent_75%,rgba(0,212,255,0.1)_75%)] bg-[length:20px_20px]"></div>
+      <main className="flex-1 p-6 relative z-10">
         <div className="container mx-auto max-w-4xl">
           {/* Page Header */}
           <div className="mb-8 text-center">
@@ -391,21 +395,11 @@ export default function CreateMonumentPage() {
               {step === 3 && (
                 <div className="space-y-6">
                   <div className="text-center">
-                    <h2 className="text-3xl font-black mb-4">STEP 3: MONUMENT DETAILS</h2>
-                    <p className="font-bold text-gray-600 mb-6">NAME YOUR MONUMENT AND SELECT YOUR CLUB</p>
+                    <h2 className="text-3xl font-black mb-4">STEP 3: SELECT YOUR CLUB</h2>
+                    <p className="font-bold text-gray-600 mb-6">CHOOSE WHICH CLUB THIS MONUMENT REPRESENTS</p>
                   </div>
 
                   <div className="space-y-4">
-                    <div>
-                      <label className="block font-black text-lg mb-2">MONUMENT NAME</label>
-                      <Input
-                        value={monumentName}
-                        onChange={(e) => setMonumentName(e.target.value)}
-                        placeholder="ENTER MONUMENT NAME..."
-                        className="bg-white text-black border-4 border-[#00D4FF] font-black text-lg"
-                      />
-                    </div>
-
                     <div>
                       <label className="block font-black text-lg mb-2">SELECT YOUR CLUB</label>
                       {clubsLoading ? (
@@ -449,7 +443,7 @@ export default function CreateMonumentPage() {
                   <div className="text-center">
                     <Button
                       onClick={handleCreateMonument}
-                      disabled={!monumentName || !selectedClub || isUploading || isPending || isConfirming}
+                      disabled={!selectedClub || isUploading || isPending || isConfirming}
                       className="bg-[#00D4FF] text-black font-black text-xl px-12 py-6 border-4 border-black disabled:opacity-50"
                     >
                       {isUploading || isPending || isConfirming ? (
@@ -474,7 +468,7 @@ export default function CreateMonumentPage() {
                     <CheckCircle className="h-24 w-24 mx-auto text-green-600" />
                     <h2 className="text-3xl font-black">MONUMENT CREATED!</h2>
                     <p className="font-bold text-gray-600">
-                      YOUR MONUMENT "{monumentName}" HAS BEEN SUCCESSFULLY CREATED
+                      YOUR MONUMENT FOR {selectedClub} HAS BEEN SUCCESSFULLY CREATED
                     </p>
                   </div>
 
@@ -482,9 +476,6 @@ export default function CreateMonumentPage() {
                     <CardContent className="p-6">
                       <h3 className="text-xl font-black mb-4">MONUMENT DETAILS</h3>
                       <div className="grid gap-2 text-left">
-                        <p>
-                          <span className="font-black">NAME:</span> {monumentName}
-                        </p>
                         <p>
                           <span className="font-black">CLUB:</span> {selectedClub}
                         </p>

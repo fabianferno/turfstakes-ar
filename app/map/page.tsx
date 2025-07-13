@@ -133,8 +133,10 @@ export default function MapPage() {
   // Don't render location-dependent content on server
   if (!isMounted) {
     return (
-      <div className="flex flex-col min-h-screen bg-black text-white">
-        <main className="flex-1 p-6">
+      <div className="flex flex-col min-h-screen bg-black text-white relative overflow-hidden" style={{ backgroundImage: 'url(/bg.webp)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
+        <div className="absolute inset-0 bg-black bg-opacity-80"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(0,212,255,0.1)_25%,rgba(0,212,255,0.1)_50%,transparent_50%,transparent_75%,rgba(0,212,255,0.1)_75%)] bg-[length:20px_20px]"></div>
+        <main className="flex-1 p-6 relative z-10">
           <div className="container mx-auto">
             <div className="mb-8">
               <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4 transform -skew-x-2">Vist and grow your club's monuments</h1>
@@ -151,8 +153,10 @@ export default function MapPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-black text-white">
-      <main className="flex-1 p-6">
+    <div className="flex flex-col min-h-screen bg-black text-white relative overflow-hidden" style={{ backgroundImage: 'url(/bg.webp)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
+      <div className="absolute inset-0 bg-black bg-opacity-80"></div>
+      <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(0,212,255,0.1)_25%,rgba(0,212,255,0.1)_50%,transparent_50%,transparent_75%,rgba(0,212,255,0.1)_75%)] bg-[length:20px_20px]"></div>
+      <main className="flex-1 p-6 relative z-10">
         <div className="container mx-auto">
           {/* Page Header */}
           <div className="mb-8">
