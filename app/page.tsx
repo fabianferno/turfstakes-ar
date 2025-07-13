@@ -1,8 +1,15 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { MapPin, Camera, Eye, Coins, Globe, Smartphone } from "lucide-react"
 import Link from "next/link"
+import { Suspense } from "react"
+import { Canvas } from "@react-three/fiber"
+import { OrbitControls } from "@react-three/drei"
+import { Monument } from "@/components/monuments"
+import { CLUB_TOKENS } from "@/lib/contracts"
 
 export default function TurfStakeHome() {
   return (
@@ -131,23 +138,60 @@ export default function TurfStakeHome() {
             <p className="text-xl md:text-2xl font-bold text-gray-300 max-w-4xl mx-auto">
               STAKE MORE TOKENS TO EVOLVE YOUR MONUMENT FROM LEVEL 1 TO 5
             </p>
+            <div className="mt-8">
+              <Link href="/demo">
+                <Button className="bg-[#00D4FF] text-black font-black border-4 border-white px-8 py-4 text-lg shadow-[4px_4px_0px_0px_#ffffff] hover:translate-x-1 hover:translate-y-1 transition-all">
+                  EXPLORE 3D MONUMENTS
+                  <Eye className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            </div>
           </div>
           <div className="grid gap-6 lg:grid-cols-5">
             {[
-              { level: 1, tokens: "1K", height: "h-16", desc: "BASIC SHRINE" },
-              { level: 2, tokens: "5K", height: "h-20", desc: "STONE PILLAR" },
-              { level: 3, tokens: "15K", height: "h-24", desc: "BRONZE STATUE" },
-              { level: 4, tokens: "50K", height: "h-28", desc: "GOLDEN MONUMENT" },
-              { level: 5, tokens: "100K", height: "h-32", desc: "LEGENDARY TEMPLE" },
-            ].map((level, index) => (
+              { level: 1, tokens: "1K", height: "h-[300px]", desc: "BASIC SHRINE" },
+              { level: 2, tokens: "5K", height: "h-[300px]", desc: "STONE PILLAR" },
+              { level: 3, tokens: "15K", height: "h-[300px]", desc: "BRONZE STATUE" },
+              { level: 4, tokens: "50K", height: "h-[300px]", desc: "GOLDEN MONUMENT" },
+              { level: 5, tokens: "100K", height: "h-[300px]", desc: "LEGENDARY TEMPLE" },
+            ].map((monumentLevel, index) => (
               <div key={index} className="text-center">
-                <div
-                  className={`${level.height} w-16 bg-gradient-to-t from-[#00D4FF] to-white border-4 border-white mx-auto mb-4 transform hover:scale-110 transition-all shadow-[4px_4px_0px_0px_#ffffff]`}
-                ></div>
+                <div className="mb-4 transform hover:scale-105 transition-all">
+                  <div className={`${monumentLevel.height} w-full bg-gray-900 rounded-lg border-4 border-white overflow-hidden shadow-[4px_4px_0px_0px_#00D4FF]`}>
+                    <Canvas
+                      camera={{ position: [0, 2, 6], fov: 45 }}
+                      style={{ width: '100%', height: '100%' }}
+                    >
+                      <Suspense fallback={null}>
+                        <Monument
+                          clubLogo={CLUB_TOKENS[0].tokenImage}
+                          clubColor="#68d4fc"
+                          clubName={CLUB_TOKENS[0].name}
+                          level={monumentLevel.level}
+                          position={[0, 0, 0]}
+                          scale={[0.8, 0.8, 0.8]}
+                          isAR={false}
+                        />
+                      </Suspense>
+
+                      <ambientLight intensity={0.5} />
+                      <directionalLight position={[10, 10, 5]} intensity={1} />
+                      <pointLight position={[0, 5, 0]} intensity={0.3} color="#ffffff" />
+
+                      <OrbitControls
+                        enablePan={false}
+                        enableZoom={false}
+                        enableRotate={false}
+                        autoRotate={true}
+                        autoRotateSpeed={2}
+                      />
+                    </Canvas>
+                  </div>
+                </div>
                 <div className="space-y-2">
-                  <h3 className="text-2xl font-black text-[#00D4FF]">LEVEL {level.level}</h3>
-                  <p className="font-black text-white">{level.tokens} TOKENS</p>
-                  <p className="font-bold text-gray-400 text-sm">{level.desc}</p>
+                  <h3 className="text-2xl font-black text-[#00D4FF]">LEVEL {monumentLevel.level}</h3>
+                  <p className="font-black text-white">{monumentLevel.tokens} TOKENS</p>
+                  <p className="font-bold text-gray-400 text-sm">{monumentLevel.desc}</p>
                 </div>
               </div>
             ))}

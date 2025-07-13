@@ -53,8 +53,8 @@ export default function MapPage() {
     const mockMonuments: Monument[] = [
       {
         id: 1,
-        name: "Camp Nou Monument",
-        club: "FC Barcelona",
+        name: "Monument #1",
+        club: "FCB",
         level: 5,
         totalStaked: 125000,
         fans: 1250,
@@ -66,8 +66,8 @@ export default function MapPage() {
       },
       {
         id: 2,
-        name: "Old Trafford Shrine",
-        club: "Manchester United",
+        name: "Monument #2",
+        club: "JUV",
         level: 4,
         totalStaked: 87500,
         fans: 892,
@@ -79,8 +79,8 @@ export default function MapPage() {
       },
       {
         id: 3,
-        name: "Anfield Memorial",
-        club: "Liverpool FC",
+        name: "Monument #3",
+        club: "ACM",
         level: 3,
         totalStaked: 45000,
         fans: 567,
@@ -92,8 +92,8 @@ export default function MapPage() {
       },
       {
         id: 4,
-        name: "Stamford Bridge Tower",
-        club: "Chelsea FC",
+        name: "Monument #4",
+        club: "MCF",
         level: 2,
         totalStaked: 23000,
         fans: 234,
@@ -105,8 +105,8 @@ export default function MapPage() {
       },
       {
         id: 5,
-        name: "Emirates Pillar",
-        club: "Arsenal FC",
+        name: "Monument #5",
+        club: "LFC",
         level: 1,
         totalStaked: 8500,
         fans: 89,

@@ -17,6 +17,7 @@ import {
   Coins,
 } from "lucide-react"
 import Link from "next/link"
+import { XRARViewer } from "@/components/xr-ar-viewer"
 
 interface NearbyMonument {
   id: number
@@ -33,7 +34,6 @@ export default function ARViewerPage() {
   const [nearbyMonuments, setNearbyMonuments] = useState<NearbyMonument[]>([])
   const [selectedMonument, setSelectedMonument] = useState<NearbyMonument | null>(null)
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
-  const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
     // Check WebXR support
@@ -64,16 +64,16 @@ export default function ARViewerPage() {
     const mockNearbyMonuments: NearbyMonument[] = [
       {
         id: 1,
-        name: "Camp Nou Monument",
-        club: "FC Barcelona",
+        name: "Monument #1",
+        club: "FCB",
         level: 5,
         distance: 0.05, // 50 meters
         clubColor: "#A50044",
       },
       {
         id: 2,
-        name: "Local Stadium Shrine",
-        club: "Manchester United",
+        name: "Monument #2",
+        club: "JUV",
         level: 2,
         distance: 0.12, // 120 meters
         clubColor: "#DA020E",
@@ -82,40 +82,7 @@ export default function ARViewerPage() {
     setNearbyMonuments(mockNearbyMonuments)
   }, [])
 
-  const startARSession = async () => {
-    try {
-      // @ts-ignore
-      if (!navigator.xr) {
-        throw new Error("WebXR not supported")
-      }
 
-      // For demo purposes, we'll simulate AR with camera
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
-      })
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        setIsARActive(true)
-      }
-
-      // In a real implementation, you would:
-      // const session = await navigator.xr.requestSession('immersive-ar')
-      // Set up WebXR rendering loop, anchor tracking, etc.
-    } catch (error) {
-      console.error("Error starting AR session:", error)
-      alert("AR not available. Using camera fallback.")
-    }
-  }
-
-  const stopARSession = () => {
-    if (videoRef.current?.srcObject) {
-      const stream = videoRef.current.srcObject as MediaStream
-      stream.getTracks().forEach((track) => track.stop())
-      videoRef.current.srcObject = null
-    }
-    setIsARActive(false)
-  }
 
   return (
     <div className="flex flex-col min-h-screen bg-black text-white">
@@ -227,100 +194,52 @@ export default function ARViewerPage() {
           {/* AR Viewer */}
           <Card className="bg-black border-4 border-[#00D4FF] shadow-[8px_8px_0px_0px_#00D4FF]">
             <CardContent className="p-6">
-              {!isARActive ? (
+              {!selectedMonument ? (
                 <div className="text-center space-y-6">
                   <div className="space-y-4">
                     <Eye className="h-24 w-24 mx-auto text-[#00D4FF]" />
                     <h3 className="text-3xl font-black text-white">START AR EXPERIENCE</h3>
                     <p className="font-bold text-gray-300">
-                      {selectedMonument
-                        ? `VIEW ${selectedMonument.name} IN AUGMENTED REALITY`
-                        : "SELECT A NEARBY MONUMENT TO VIEW IN AR"}
+                      SELECT A NEARBY MONUMENT TO VIEW IN AR
                     </p>
                   </div>
-
-                  {selectedMonument && (
-                    <div className="space-y-4">
-                      {selectedMonument.distance < 0.1 ? (
-                        <Button
-                          onClick={startARSession}
-                          className="bg-[#00D4FF] text-black font-black text-xl px-12 py-6 border-4 border-white"
-                        >
-                          <Camera className="mr-3 h-6 w-6" />
-                          START AR SESSION
-                        </Button>
-                      ) : (
-                        <div className="space-y-4">
-                          <div className="bg-yellow-100 border-4 border-yellow-500 p-4 text-black">
-                            <p className="font-black">⚠️ GET CLOSER TO THE MONUMENT TO VIEW IN AR</p>
-                            <p className="font-bold">
-                              YOU NEED TO BE WITHIN 100M ({(selectedMonument.distance * 1000).toFixed(0)}M AWAY)
-                            </p>
-                          </div>
-                          <Link href="/map">
-                            <Button className="bg-white text-black font-black border-4 border-black">
-                              <MapPin className="mr-2 h-5 w-5" />
-                              NAVIGATE TO MONUMENT
-                            </Button>
-                          </Link>
-                        </div>
-                      )}
+                </div>
+              ) : selectedMonument.distance >= 0.1 ? (
+                <div className="text-center space-y-6">
+                  <div className="space-y-4">
+                    <Eye className="h-24 w-24 mx-auto text-[#00D4FF]" />
+                    <h3 className="text-3xl font-black text-white">GET CLOSER TO MONUMENT</h3>
+                    <div className="bg-yellow-100 border-4 border-yellow-500 p-4 text-black">
+                      <p className="font-black">⚠️ GET CLOSER TO THE MONUMENT TO VIEW IN AR</p>
+                      <p className="font-bold">
+                        YOU NEED TO BE WITHIN 100M ({(selectedMonument.distance * 1000).toFixed(0)}M AWAY)
+                      </p>
                     </div>
-                  )}
+                    <Link href="/map">
+                      <Button className="bg-white text-black font-black border-4 border-black">
+                        <MapPin className="mr-2 h-5 w-5" />
+                        NAVIGATE TO MONUMENT
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-4">
+                  <h3 className="text-2xl font-black text-white text-center mb-4">
+                    AR MONUMENT VIEWER
+                  </h3>
+
+                  {/* XR AR Viewer Component */}
                   <div className="relative">
-                    <video ref={videoRef} autoPlay playsInline className="w-full border-4 border-[#00D4FF]" />
-
-                    {/* AR Overlay - Monument Simulation */}
-                    {selectedMonument && (
-                      <div className="absolute inset-0 pointer-events-none">
-                        {/* Simulated AR Monument */}
-                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                          <div className="text-center">
-                            {/* Monument Level Visualization */}
-                            <div
-                              className={`w-32 h-${16 + selectedMonument.level * 8} bg-gradient-to-t from-gray-600 to-white border-4 border-[#00D4FF] mx-auto mb-4 shadow-[8px_8px_0px_0px_#00D4FF] animate-pulse`}
-                            >
-                              <div
-                                className="w-full h-8 flex items-center justify-center text-black font-black"
-                                style={{ backgroundColor: selectedMonument.clubColor }}
-                              >
-                                {selectedMonument.club
-                                  .split(" ")
-                                  .map((word) => word[0])
-                                  .join("")}
-                              </div>
-                            </div>
-
-                            {/* Monument Info Overlay */}
-                            <div className="bg-black bg-opacity-80 text-white p-4 border-4 border-[#00D4FF] font-black">
-                              <h4 className="text-lg">{selectedMonument.name}</h4>
-                              <p className="text-sm">LEVEL {selectedMonument.level}</p>
-                              <div className="flex items-center gap-2 mt-2">
-                                <Coins className="h-4 w-4 text-[#00D4FF]" />
-                                <span className="text-xs">STAKE TOKENS</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* AR Target Reticle */}
-                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                          <Target className="h-8 w-8 text-[#00D4FF] animate-spin" />
-                        </div>
-                      </div>
-                    )}
+                    <XRARViewer
+                      selectedMonument={selectedMonument}
+                      anchorImage="/default-anchor.png"
+                      onARStateChange={(isActive) => setIsARActive(isActive)}
+                    />
                   </div>
 
+                  {/* Monument Actions */}
                   <div className="flex gap-4">
-                    <Button
-                      onClick={stopARSession}
-                      className="flex-1 bg-red-600 text-white font-black border-4 border-white"
-                    >
-                      STOP AR
-                    </Button>
                     <Link href={`/monument/${selectedMonument?.id}`} className="flex-1">
                       <Button className="w-full bg-[#00D4FF] text-black font-black border-4 border-white">
                         <Zap className="mr-2 h-5 w-5" />
@@ -335,8 +254,8 @@ export default function ARViewerPage() {
                     <ul className="font-bold text-sm space-y-1">
                       <li>• POINT CAMERA AT THE ANCHOR OBJECT</li>
                       <li>• MOVE SLOWLY FOR BETTER TRACKING</li>
-                      <li>• TAP MONUMENT TO INTERACT</li>
                       <li>• USE GOOD LIGHTING CONDITIONS</li>
+                      <li>• MONUMENT WILL APPEAR WHEN ANCHOR IS DETECTED</li>
                     </ul>
                   </div>
                 </div>
