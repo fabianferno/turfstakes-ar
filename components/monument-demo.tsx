@@ -166,9 +166,10 @@ export const MonumentDemo: React.FC = () => {
                                     <h4 className="font-black text-sm mb-2">AR INSTRUCTIONS:</h4>
                                     <ul className="font-bold text-xs space-y-1">
                                         <li>• Click "ENTER AR" to start AR experience</li>
-                                        <li>• Point your device at the ground/table</li>
-                                        <li>• The monument will appear in your space</li>
-                                        <li>• Walk around to see different angles</li>
+                                        <li>• Point device at flat surface (table/floor)</li>
+                                        <li>• Blue reticle shows detected surface</li>
+                                        <li>• Monument auto-places on detected surface</li>
+                                        <li>• Walk around to view from different angles</li>
                                     </ul>
                                 </div>
                             </div>
@@ -224,9 +225,9 @@ export const MonumentDemo: React.FC = () => {
                             ) : (
                                 <>
                                     <li>• REQUIRES: WebXR compatible device/browser</li>
-                                    <li>• BUTTON: Click "ENTER AR" to start</li>
-                                    <li>• PLACEMENT: Point at ground/table surface</li>
-                                    <li>• MOVEMENT: Walk around to see different angles</li>
+                                    <li>• HIT TEST: Auto-detects surfaces for placement</li>
+                                    <li>• RETICLE: Blue indicator shows detected surface</li>
+                                    <li>• ANCHORING: Monument locks to detected surface</li>
                                 </>
                             )}
                         </ul>
